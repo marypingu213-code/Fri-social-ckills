@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社會技巧教室</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+  :root {
+    --bg: #F5F6F4;
+    --ink: #23282B;
+    --ink-soft: #5B6469;
+    --line: #D8DCDA;
+    --card-bg: #FFFFFF;
+
+    --a: #3E6690;
+    --a-bg: #EAF0F5;
+    --b: #3E8272;
+    --b-bg: #E9F3EF;
+    --c: #A97A2C;
+    --c-bg: #F5EFE3;
+    --d: #6E5C93;
+    --d-bg: #EFEBF4;
+    --e: #A85842;
+    --e-bg: #F5EAE6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    overflow: hidden;
+  }
+
+  #app {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .view {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+  }
+  .view.active { display: flex; }
+
+  /* ---------- 大廳 Lobby ---------- */
+
+  #lobby {
+    padding: 5vh 6vw;
+    justify-content: center;
+    gap: 4vh;
+  }
+
+  .lobby-header {
+    text-align: left;
+  }
+
+  .lobby-eyebrow {
+    font-size: 1.1vw;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin: 0 0 0.6vh 0;
+  }
+
+  .lobby-title {
+    font-size: 3.4vw;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  .doors {
+    display: flex;
+    gap: 1.6vw;
+    align-items: stretch;
+  }
+
+  .door {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-left: 0.6vw solid var(--door-color, var(--ink));
+    border-radius: 4px;
+    padding: 2.6vh 1.6vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4vh;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    font-family: inherit;
+  }
+
+  .door:hover, .door:focus-visible {
+    transform: translateY(-0.4vh);
+    box-shadow: 0 0.8vh 1.6vh rgba(0,0,0,0.08);
+    outline: none;
+  }
+
+  .door:disabled {
+    cursor: default;
+    opacity: 0.55;
+  }
+  .door:disabled:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .door-letter {
+    font-size: 2.6vw;
+    font-weight: 900;
+    color: var(--door-color, var(--ink));
+    line-height: 1;
+  }
+
+  .door-title {
+    font-size: 1.35vw;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .door-range {
+    font-size: 1vw;
+    color: var(--ink-soft);
+    margin-top: auto;
+  }
+
+  .door-status {
+    font-size: 0.95vw;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  /* ---------- 單元投影片 Slides ---------- */
+
+  #unitA {
+    background: var(--a-bg);
+  }
+
+  .slide-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2.6vh 3.4vw 0 3.4vw;
+  }
+
+  .back-btn {
+    font-family: inherit;
+    font-size: 1vw;
+    color: var(--a);
+    background: none;
+    border: 1px solid var(--a);
+    border-radius: 3px;
+    padding: 0.8vh 1.4vw;
+    cursor: pointer;
+  }
+  .back-btn:hover, .back-btn:focus-visible { background: rgba(255,255,255,0.6); outline: none; }
+
+  .slide-counter {
+    font-size: 1vw;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .slide-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2vh 8vw 4vh 8vw;
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    max-width: 900px;
+  }
+  .slide.active { display: block; }
+
+  .slide-kicker {
+    font-size: 1.15vw;
+    color: var(--a);
+    font-weight: 700;
+    margin: 0 0 1.2vh 0;
+  }
+
+  .slide-title {
+    font-size: 2.6vw;
+    font-weight: 900;
+    line-height: 1.25;
+    margin: 0 0 3.2vh 0;
+  }
+
+  .slide-points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8vh;
+  }
+
+  .slide-points li {
+    font-size: 1.5vw;
+    line-height: 1.55;
+    padding-left: 1.8vw;
+    position: relative;
+  }
+
+  .slide-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 0.9vw;
+    height: 2px;
+    background: var(--a);
+  }
+
+  .slide-frame {
+    margin-top: 3.2vh;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.8vh 1.8vw;
+    font-size: 1.2vw;
+    color: var(--ink-soft);
+  }
+  .slide-frame strong { color: var(--ink); font-weight: 700; }
+
+  .unit-cover .slide-title { font-size: 3.2vw; }
+  .unit-cover .slide-sub { font-size: 1.4vw; color: var(--ink-soft); line-height: 1.6; max-width: 34ch; }
+
+  .slide-intro {
+    font-size: 1.25vw;
+    color: var(--ink-soft);
+    margin: 0 0 2.6vh 0;
+  }
+
+  .choice-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1vw;
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 0.7vw;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 1vh 1.4vw;
+    font-size: 1.25vw;
+    font-weight: 500;
+  }
+
+  .chip-swatch {
+    width: 1.4vw;
+    height: 1.4vw;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .slide-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2vw;
+    padding: 0 0 4vh 0;
+  }
+
+  .nav-btn {
+    font-family: inherit;
+    font-size: 1.2vw;
+    font-weight: 700;
+    color: #fff;
+    background: var(--a);
+    border: none;
+    border-radius: 3px;
+    padding: 1.2vh 2.4vw;
+    cursor: pointer;
+  }
+  .nav-btn:disabled {
+    background: var(--line);
+    color: var(--ink-soft);
+    cursor: default;
+  }
+  .nav-btn:hover:not(:disabled), .nav-btn:focus-visible:not(:disabled) {
+    filter: brightness(1.08);
+    outline: none;
+  }
+
+  .dots {
+    display: flex;
+    gap: 0.6vw;
+  }
+  .dot {
+    width: 0.7vw;
+    height: 0.7vw;
+    border-radius: 50%;
+    background: var(--line);
+  }
+  .dot.current { background: var(--a); }
+
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ 大廳 ============ -->
+  <div id="lobby" class="view active">
+    <div class="lobby-header">
+      <p class="lobby-eyebrow">本學期 30 節 · 社會技巧課程</p>
+      <h1 class="lobby-title">選擇今天要上的單元</h1>
+    </div>
+    <div class="doors" id="doors"></div>
+  </div>
+
+  <!-- ============ 單元 A 簡報 ============ -->
+  <div id="unitA" class="view">
+    <div class="slide-topbar">
+      <button class="back-btn" onclick="goLobby()">← 回大廳</button>
+      <span class="slide-counter" id="counterA"></span>
+    </div>
+    <div class="slide-stage" id="stageA"></div>
+    <div class="slide-nav">
+      <button class="nav-btn" id="prevA" onclick="changeSlide(-1)">上一頁</button>
+      <div class="dots" id="dotsA"></div>
+      <button class="nav-btn" id="nextA" onclick="changeSlide(1)">下一頁</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ---------- 大廳資料 ----------
+  const units = [
+    { id: "A", color: "var(--a)", title: "勇於說出自己的想法", range: "第1-6節", enabled: true },
+    { id: "B", color: "var(--b)", title: "分享自己的心情", range: "第7-12節", enabled: false },
+    { id: "C", color: "var(--c)", title: "給予同儕積極正向的建議", range: "第13-18節", enabled: false },
+    { id: "D", color: "var(--d)", title: "培養同理心", range: "第19-24節", enabled: false },
+    { id: "E", color: "var(--e)", title: "遇到事情先思考再批判", range: "第25-30節", enabled: false },
+  ];
+
+  const doorsEl = document.getElementById('doors');
+  units.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'door';
+    btn.style.setProperty('--door-color', u.color);
+    btn.disabled = !u.enabled;
+    btn.innerHTML = `
+      <div class="door-letter">${u.id}</div>
+      <div class="door-title">${u.title}</div>
+      <div class="door-status">${u.enabled ? '' : '製作中'}</div>
+      <div class="door-range">${u.range}</div>
+    `;
+    if (u.enabled) btn.onclick = () => enterUnit(u.id);
+    doorsEl.appendChild(btn);
+  });
+
+  function enterUnit(id) {
+    document.getElementById('lobby').classList.remove('active');
+    document.getElementById('unit' + id).classList.add('active');
+    if (id === 'A') renderSlideA();
+  }
+
+  function goLobby() {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('lobby').classList.add('active');
+  }
+
+  // ---------- 單元 A 投影片內容 ----------
+  const slidesA = [
+    {
+      cover: true,
+      kicker: "單元 A",
+      title: "勇於說出自己的想法",
+      sub: "第1-6節。從指認、選擇，逐步過渡到主動表達；全程可使用 Pass 牌，不強迫發言。"
+    },
+    {
+      kicker: "第1節",
+      title: "認識彼此與課程默契",
+      points: [
+        "自我介紹：選擇題自介卡（圈選喜歡的顏色／動物／科目）",
+        "建立班規：介紹 Pass 牌，不想說可以先跳過",
+        "電視呈現本學期課程總覽，讓學生知道接下來要學什麼",
+        "主活動：猜猜我是誰"
+      ]
+    },
+    {
+      kicker: "第1節・延伸",
+      title: "我喜歡的顏色",
+      intro: "看看下面的顏色，選一個你喜歡的",
+      choices: [
+        { label: "紅色", swatch: "#C1554D" },
+        { label: "橘色", swatch: "#D08A3E" },
+        { label: "黃色", swatch: "#D3B23E" },
+        { label: "綠色", swatch: "#4C8577" },
+        { label: "藍色", swatch: "#3E6690" },
+        { label: "紫色", swatch: "#6E5C93" },
+        { label: "粉色", swatch: "#C97D8B" },
+        { label: "黑色", swatch: "#3B3F42" }
+      ],
+      frame: "句型鷹架：<strong>我喜歡 ___ 顏色，因為 ___</strong>"
+    },
+    {
+      kicker: "第1節・延伸",
+      title: "我喜歡的動物",
+      intro: "看看下面的動物，選一個你喜歡的",
+      choices: [
+        { label: "狗" }, { label: "貓" }, { label: "兔子" }, { label: "鳥" },
+        { label: "魚" }, { label: "獅子" }, { label: "熊" }, { label: "恐龍" }
+      ],
+      frame: "句型鷹架：<strong>我喜歡 ___，因為 ___</strong>"
+    },
+    {
+      kicker: "第1節・延伸",
+      title: "我喜歡的科目",
+      intro: "看看下面的科目，選一個你喜歡的",
+      choices: [
+        { label: "國語" }, { label: "數學" }, { label: "自然" }, { label: "體育" },
+        { label: "美術" }, { label: "音樂" }, { label: "社會" }
+      ],
+      frame: "句型鷹架：<strong>我喜歡 ___，因為 ___</strong>"
+    },
+    {
+      kicker: "第2節",
+      title: "想法沒有對錯",
+      points: [
+        "電視播放情境短片：兩人對同一件事有不同看法",
+        "主活動：二選一牆，走到教室兩側表態",
+        "願意的學生用一句話說原因（可簡短）",
+        "教師示範簡短分享，作為楷模"
+      ],
+      frame: "句型鷹架：<strong>我覺得 ___，因為 ___</strong>"
+    },
+    {
+      kicker: "第3節",
+      title: "用物品輔助表達",
+      points: [
+        "主活動：物品說故事，帶一個小物品或從教具箱選",
+        "允許純展示不說明，教師示範追問但不強迫回答"
+      ],
+      frame: "句型鷹架：<strong>這是 ___，因為 ___</strong>"
+    },
+    {
+      kicker: "第4節",
+      title: "想法排行榜",
+      points: [
+        "給定情境（例如：最喜歡的下課活動）",
+        "全班用便利貼寫下／畫下想法，貼到電視投影的排行榜",
+        "貼上去這個行為本身就是表達，說明是加分不是必要",
+        "進階：選一張自己的便利貼，簡短說明原因"
+      ]
+    },
+    {
+      kicker: "第5節",
+      title: "表達不同意見的方法",
+      points: [
+        "電視播放情境短片：兩人意見不同但用平和方式表達",
+        "教師先示範一次，再由學生兩兩對練",
+        "使用劇本卡，可照著唸，逐漸脫稿"
+      ],
+      frame: "句型鷹架：<strong>我有不同的想法，我覺得 ___</strong>"
+    },
+    {
+      kicker: "第6節",
+      title: "單元回顧＋小任務",
+      points: [
+        "複習前五節的句型卡，選一句自己最常用的",
+        "小任務：分享一件事（畫的／寫的／說的，三選一都算完成）",
+        "教師給予具體正向回饋，聚焦嘗試的行為"
+      ]
+    }
+  ];
+
+  let currentA = 0;
+
+  function renderSlideA() {
+    const stage = document.getElementById('stageA');
+    stage.innerHTML = '';
+    slidesA.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'slide' + (i === currentA ? ' active' : '') + (s.cover ? ' unit-cover' : '');
+      if (s.cover) {
+        div.innerHTML = `
+          <p class="slide-kicker">${s.kicker}</p>
+          <h1 class="slide-title">${s.title}</h1>
+          <p class="slide-sub">${s.sub}</p>
+        `;
+      } else if (s.choices) {
+        div.innerHTML = `
+          <p class="slide-kicker">${s.kicker}</p>
+          <h1 class="slide-title">${s.title}</h1>
+          ${s.intro ? `<p class="slide-intro">${s.intro}</p>` : ''}
+          <div class="choice-grid">
+            ${s.choices.map(c => `
+              <div class="chip">
+                ${c.swatch ? `<span class="chip-swatch" style="background:${c.swatch}"></span>` : ''}
+                <span>${c.label}</span>
+              </div>
+            `).join('')}
+          </div>
+          ${s.frame ? `<div class="slide-frame">${s.frame}</div>` : ''}
+        `;
+      } else {
+        div.innerHTML = `
+          <p class="slide-kicker">${s.kicker}</p>
+          <h1 class="slide-title">${s.title}</h1>
+          <ul class="slide-points">
+            ${s.points.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+          ${s.frame ? `<div class="slide-frame">${s.frame}</div>` : ''}
+        `;
+      }
+      stage.appendChild(div);
+    });
+
+    document.getElementById('counterA').textContent = `${currentA + 1} / ${slidesA.length}`;
+    document.getElementById('prevA').disabled = currentA === 0;
+    document.getElementById('nextA').disabled = currentA === slidesA.length - 1;
+
+    const dotsEl = document.getElementById('dotsA');
+    dotsEl.innerHTML = '';
+    slidesA.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === currentA ? ' current' : '');
+      dotsEl.appendChild(dot);
+    });
+  }
+
+  function changeSlide(dir) {
+    const next = currentA + dir;
+    if (next < 0 || next >= slidesA.length) return;
+    currentA = next;
+    renderSlideA();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('unitA').classList.contains('active')) return;
+    if (e.key === 'ArrowRight') changeSlide(1);
+    if (e.key === 'ArrowLeft') changeSlide(-1);
+    if (e.key === 'Escape') goLobby();
+  });
+</script>
+
+</body>
+</html>
