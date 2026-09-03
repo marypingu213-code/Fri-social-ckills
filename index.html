@@ -272,6 +272,33 @@
     border: 1px solid rgba(0,0,0,0.08);
   }
 
+  .qa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.2vh;
+  }
+
+  .qa-item {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.6vh 1.6vw;
+  }
+
+  .qa-q {
+    font-size: 1.35vw;
+    font-weight: 700;
+    color: var(--a);
+    margin: 0 0 0.8vh 0;
+  }
+
+  .qa-a {
+    font-size: 1.2vw;
+    color: var(--ink);
+    line-height: 1.55;
+    margin: 0;
+  }
+
   .slide-nav {
     display: flex;
     align-items: center;
@@ -390,6 +417,16 @@
       sub: "第1-6節。從指認、選擇，逐步過渡到主動表達；全程可使用 Pass 牌，不強迫發言。"
     },
     {
+      kicker: "第1節・開場",
+      title: "為什麼要上社會技巧課？",
+      qa: [
+        { q: "為什麼我要來資源班上課？", a: "不是因為做錯了什麼。每個人都有需要特別練習的技能，就像有人加強數學、有人加強球類，我們這組是加強「社交小技巧」。" },
+        { q: "為什麼只有我們幾個來？", a: "這是配合需求安排的小組，人數少才能一個一個練習，不代表誰哪裡不好。" },
+        { q: "早自修不能做自己的事，會不會很可惜？", a: "老師知道這是一個犧牲。這堂課會盡量不無聊、不會逼你一定要說話，你可以用 Pass 牌先跳過。" },
+        { q: "同學會不會覺得我很奇怪？", a: "很多學校都有類似的安排，這是可以被使用的資源，不是標籤。" }
+      ]
+    },
+    {
       kicker: "第1節",
       title: "認識彼此與課程默契",
       points: [
@@ -499,6 +536,19 @@
           <p class="slide-kicker">${s.kicker}</p>
           <h1 class="slide-title">${s.title}</h1>
           <p class="slide-sub">${s.sub}</p>
+        `;
+      } else if (s.qa) {
+        div.innerHTML = `
+          <p class="slide-kicker">${s.kicker}</p>
+          <h1 class="slide-title">${s.title}</h1>
+          <div class="qa-list">
+            ${s.qa.map(item => `
+              <div class="qa-item">
+                <p class="qa-q">${item.q}</p>
+                <p class="qa-a">${item.a}</p>
+              </div>
+            `).join('')}
+          </div>
         `;
       } else if (s.choices) {
         div.innerHTML = `
