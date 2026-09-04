@@ -65,14 +65,14 @@
   }
 
   .lobby-eyebrow {
-    font-size: 1.1vw;
+    font-size: 1.5vw;
     color: var(--ink-soft);
     letter-spacing: 0.02em;
-    margin: 0 0 0.6vh 0;
+    margin: 0 0 0.8vh 0;
   }
 
   .lobby-title {
-    font-size: 3.4vw;
+    font-size: 4.4vw;
     font-weight: 900;
     margin: 0;
     line-height: 1.15;
@@ -116,26 +116,26 @@
   }
 
   .door-letter {
-    font-size: 2.6vw;
+    font-size: 3.6vw;
     font-weight: 900;
     color: var(--door-color, var(--ink));
     line-height: 1;
   }
 
   .door-title {
-    font-size: 1.35vw;
+    font-size: 1.8vw;
     font-weight: 700;
     line-height: 1.35;
   }
 
   .door-range {
-    font-size: 1vw;
+    font-size: 1.3vw;
     color: var(--ink-soft);
     margin-top: auto;
   }
 
   .door-status {
-    font-size: 0.95vw;
+    font-size: 1.25vw;
     color: var(--ink-soft);
     font-weight: 500;
   }
@@ -155,7 +155,7 @@
 
   .back-btn {
     font-family: inherit;
-    font-size: 1vw;
+    font-size: 1.3vw;
     color: var(--a);
     background: none;
     border: 1px solid var(--a);
@@ -165,8 +165,26 @@
   }
   .back-btn:hover, .back-btn:focus-visible { background: rgba(255,255,255,0.6); outline: none; }
 
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1.4vw;
+  }
+
+  .fullscreen-btn {
+    font-family: inherit;
+    font-size: 1.3vw;
+    color: var(--ink-soft);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.8vh 1.4vw;
+    cursor: pointer;
+  }
+  .fullscreen-btn:hover, .fullscreen-btn:focus-visible { background: rgba(0,0,0,0.04); outline: none; }
+
   .slide-counter {
-    font-size: 1vw;
+    font-size: 1.3vw;
     color: var(--ink-soft);
     font-weight: 500;
   }
@@ -176,25 +194,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2vh 8vw 4vh 8vw;
+    padding: 2vh 5vw 4vh 5vw;
   }
 
   .slide {
     display: none;
     width: 100%;
-    max-width: 900px;
+    max-width: 68vw;
   }
   .slide.active { display: block; }
 
   .slide-kicker {
-    font-size: 1.15vw;
+    font-size: 1.5vw;
     color: var(--a);
     font-weight: 700;
     margin: 0 0 1.2vh 0;
   }
 
   .slide-title {
-    font-size: 2.6vw;
+    font-size: 3.4vw;
     font-weight: 900;
     line-height: 1.25;
     margin: 0 0 3.2vh 0;
@@ -210,7 +228,7 @@
   }
 
   .slide-points li {
-    font-size: 1.5vw;
+    font-size: 1.95vw;
     line-height: 1.55;
     padding-left: 1.8vw;
     position: relative;
@@ -232,16 +250,16 @@
     border: 1px solid var(--line);
     border-radius: 4px;
     padding: 1.8vh 1.8vw;
-    font-size: 1.2vw;
+    font-size: 1.6vw;
     color: var(--ink-soft);
   }
   .slide-frame strong { color: var(--ink); font-weight: 700; }
 
-  .unit-cover .slide-title { font-size: 3.2vw; }
-  .unit-cover .slide-sub { font-size: 1.4vw; color: var(--ink-soft); line-height: 1.6; max-width: 34ch; }
+  .unit-cover .slide-title { font-size: 4.2vw; }
+  .unit-cover .slide-sub { font-size: 1.8vw; color: var(--ink-soft); line-height: 1.6; max-width: 40ch; }
 
   .slide-intro {
-    font-size: 1.25vw;
+    font-size: 1.6vw;
     color: var(--ink-soft);
     margin: 0 0 2.6vh 0;
   }
@@ -259,14 +277,14 @@
     background: var(--card-bg);
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 1vh 1.4vw;
-    font-size: 1.25vw;
+    padding: 1.1vh 1.6vw;
+    font-size: 1.6vw;
     font-weight: 500;
   }
 
   .chip-swatch {
-    width: 1.4vw;
-    height: 1.4vw;
+    width: 1.6vw;
+    height: 1.6vw;
     border-radius: 50%;
     flex-shrink: 0;
     border: 1px solid rgba(0,0,0,0.08);
@@ -275,7 +293,7 @@
   .qa-list {
     display: flex;
     flex-direction: column;
-    gap: 2.2vh;
+    gap: 2vh;
   }
 
   .qa-item {
@@ -286,16 +304,16 @@
   }
 
   .qa-q {
-    font-size: 1.35vw;
+    font-size: 1.7vw;
     font-weight: 700;
     color: var(--a);
     margin: 0 0 0.8vh 0;
   }
 
   .qa-a {
-    font-size: 1.2vw;
+    font-size: 1.45vw;
     color: var(--ink);
-    line-height: 1.55;
+    line-height: 1.5;
     margin: 0;
   }
 
@@ -309,7 +327,7 @@
 
   .nav-btn {
     font-family: inherit;
-    font-size: 1.2vw;
+    font-size: 1.5vw;
     font-weight: 700;
     color: #fff;
     background: var(--a);
@@ -349,17 +367,21 @@
   <!-- ============ 大廳 ============ -->
   <div id="lobby" class="view active">
     <div class="lobby-header">
-      <p class="lobby-eyebrow">本學期 30 節 · 社會技巧課程</p>
+      <p class="lobby-eyebrow">社會技巧課程</p>
       <h1 class="lobby-title">選擇今天要上的單元</h1>
     </div>
     <div class="doors" id="doors"></div>
+    <button class="fullscreen-btn" style="position:absolute; top:2.6vh; right:3.4vw;" onclick="toggleFullscreen()">⛶ 全螢幕</button>
   </div>
 
   <!-- ============ 單元 A 簡報 ============ -->
   <div id="unitA" class="view">
     <div class="slide-topbar">
       <button class="back-btn" onclick="goLobby()">← 回大廳</button>
-      <span class="slide-counter" id="counterA"></span>
+      <div class="topbar-right">
+        <span class="slide-counter" id="counterA"></span>
+        <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
+      </div>
     </div>
     <div class="slide-stage" id="stageA"></div>
     <div class="slide-nav">
@@ -372,13 +394,23 @@
 </div>
 
 <script>
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  }
+</script>
+
+<script>
   // ---------- 大廳資料 ----------
   const units = [
-    { id: "A", color: "var(--a)", title: "勇於說出自己的想法", range: "第1-6節", enabled: true },
-    { id: "B", color: "var(--b)", title: "分享自己的心情", range: "第7-12節", enabled: false },
-    { id: "C", color: "var(--c)", title: "給予同儕積極正向的建議", range: "第13-18節", enabled: false },
-    { id: "D", color: "var(--d)", title: "培養同理心", range: "第19-24節", enabled: false },
-    { id: "E", color: "var(--e)", title: "遇到事情先思考再批判", range: "第25-30節", enabled: false },
+    { id: "A", color: "var(--a)", title: "勇於說出自己的想法", range: "共6堂", enabled: true },
+    { id: "B", color: "var(--b)", title: "分享自己的心情", range: "共6堂", enabled: false },
+    { id: "C", color: "var(--c)", title: "給予同儕積極正向的建議", range: "共6堂", enabled: false },
+    { id: "D", color: "var(--d)", title: "培養同理心", range: "共6堂", enabled: false },
+    { id: "E", color: "var(--e)", title: "遇到事情先思考再批判", range: "共6堂", enabled: false },
   ];
 
   const doorsEl = document.getElementById('doors');
@@ -414,10 +446,10 @@
       cover: true,
       kicker: "單元 A",
       title: "勇於說出自己的想法",
-      sub: "第1-6節。從指認、選擇，逐步過渡到主動表達；全程可使用 Pass 牌，不強迫發言。"
+      sub: "共6堂。從指認、選擇，逐步過渡到主動表達；全程可使用 Pass 牌，不強迫發言。"
     },
     {
-      kicker: "第1節・開場",
+      kicker: "A-1・開場",
       title: "為什麼要上社會技巧課？",
       qa: [
         { q: "為什麼我要來資源班上課？", a: "不是因為做錯了什麼。每個人都有需要特別練習的技能，就像有人加強數學、有人加強球類，我們這組是加強「社交小技巧」。" },
@@ -427,7 +459,7 @@
       ]
     },
     {
-      kicker: "第1節",
+      kicker: "A-1",
       title: "認識彼此與課程默契",
       points: [
         "自我介紹：選擇題自介卡（圈選喜歡的顏色／動物／科目）",
@@ -437,7 +469,7 @@
       ]
     },
     {
-      kicker: "第1節・延伸",
+      kicker: "A-1・延伸",
       title: "我喜歡的顏色",
       intro: "看看下面的顏色，選一個你喜歡的",
       choices: [
@@ -453,7 +485,7 @@
       frame: "句型鷹架：<strong>我喜歡 ___ 顏色，因為 ___</strong>"
     },
     {
-      kicker: "第1節・延伸",
+      kicker: "A-1・延伸",
       title: "我喜歡的動物",
       intro: "看看下面的動物，選一個你喜歡的",
       choices: [
@@ -463,7 +495,7 @@
       frame: "句型鷹架：<strong>我喜歡 ___，因為 ___</strong>"
     },
     {
-      kicker: "第1節・延伸",
+      kicker: "A-1・延伸",
       title: "我喜歡的科目",
       intro: "看看下面的科目，選一個你喜歡的",
       choices: [
@@ -473,7 +505,7 @@
       frame: "句型鷹架：<strong>我喜歡 ___，因為 ___</strong>"
     },
     {
-      kicker: "第2節",
+      kicker: "A-2",
       title: "想法沒有對錯",
       points: [
         "電視播放情境短片：兩人對同一件事有不同看法",
@@ -484,7 +516,7 @@
       frame: "句型鷹架：<strong>我覺得 ___，因為 ___</strong>"
     },
     {
-      kicker: "第3節",
+      kicker: "A-3",
       title: "用物品輔助表達",
       points: [
         "主活動：物品說故事，帶一個小物品或從教具箱選",
@@ -493,7 +525,7 @@
       frame: "句型鷹架：<strong>這是 ___，因為 ___</strong>"
     },
     {
-      kicker: "第4節",
+      kicker: "A-4",
       title: "想法排行榜",
       points: [
         "給定情境（例如：最喜歡的下課活動）",
@@ -503,7 +535,7 @@
       ]
     },
     {
-      kicker: "第5節",
+      kicker: "A-5",
       title: "表達不同意見的方法",
       points: [
         "電視播放情境短片：兩人意見不同但用平和方式表達",
@@ -513,7 +545,7 @@
       frame: "句型鷹架：<strong>我有不同的想法，我覺得 ___</strong>"
     },
     {
-      kicker: "第6節",
+      kicker: "A-6",
       title: "單元回顧＋小任務",
       points: [
         "複習前五節的句型卡，選一句自己最常用的",
