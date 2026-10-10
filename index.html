@@ -123,5 +123,164 @@ function move(id,dir){var list=decks[id];var n=pos[id]+dir;if(n<0||n>=list.lengt
 document.addEventListener('keydown',function(e){var active=document.querySelector('.view.active');if(!active||active.id==='lobby')return;var id=active.id.slice(-1);if(e.key==='ArrowRight')move(id,1);if(e.key==='ArrowLeft')move(id,-1);if(e.key==='Escape')backHome();});
 window.addEventListener('resize',function(){var active=document.querySelector('.view.active');if(active&&active.id!=='lobby')render(active.id.slice(-1));});
 </script>
+<!-- ===== 新增：最後一頁「抽籤挑戰」（只在原檔最後加入，未改動上方任何內容） ===== -->
+<style>
+.draw-wrap{max-width:72vw;margin:0 auto;text-align:center;position:relative}
+.draw-guide{font-size:1.45vw;color:var(--soft);margin:-.6vh 0 1.2vh;line-height:1.45}
+.draw-round{display:inline-block;background:#fff;border:2px solid var(--c);color:var(--c);border-radius:999px;padding:.5vh 1.4vw;font-size:1.35vw;font-weight:900}
+.draw-round.r2{background:var(--c);color:#fff}
+.draw-sound{position:absolute;right:0;top:0;background:#fff;border:1px solid var(--line);border-radius:6px;font-size:1.2vw;padding:.4vh .8vw;cursor:pointer}
+.draw-card{--cc:#D9CBB0;width:44vw;max-width:100%;min-height:25vh;margin:1.6vh auto 2.4vh;background:#fff;border:4px solid var(--cc);border-radius:20px;box-shadow:0 9px 0 var(--cc);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vh 2vw}
+.draw-topic{font-size:3.2vw;font-weight:900;line-height:1.25;color:var(--cc)}
+.draw-card.empty .draw-topic{color:var(--soft);font-size:2.2vw}
+.draw-phrase{font-size:1.5vw;color:var(--soft);margin-top:.8vh;min-height:1.5em}
+.draw-who{font-size:2.3vw;font-weight:900;margin-top:1.4vh;min-height:1.6em}
+.draw-who .name{display:inline-block;background:var(--cc);color:#fff;border-radius:10px;padding:.2vh 1.1vw;margin-left:.4vw}
+.draw-who small{display:block;font-size:1.2vw;color:var(--soft);font-weight:700;margin-top:.4vh}
+.draw-card.tick{animation:drawTick .11s ease-out}
+.draw-card.land{animation:drawLand .5s ease-out}
+.draw-who.pop .name{animation:drawPop .45s ease-out}
+@keyframes drawTick{from{transform:translateY(-7px)}to{transform:none}}
+@keyframes drawLand{0%{transform:scale(.92)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes drawPop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.draw-btn{font-size:1.7vw;font-weight:900;color:#fff;background:var(--c);border:0;border-radius:12px;padding:1.3vh 2.6vw;cursor:pointer;box-shadow:0 5px 0 #7d5a20}
+.draw-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #7d5a20}
+.draw-btn:disabled{opacity:.6;cursor:default}
+.draw-btn:focus-visible,.draw-sound:focus-visible{outline:3px solid #23282B;outline-offset:3px}
+.draw-reset{font-size:1.2vw;background:none;border:0;color:var(--soft);text-decoration:underline;cursor:pointer;margin-left:1.2vw}
+.draw-track{display:grid;grid-template-columns:repeat(5,1fr);gap:.8vw;margin-top:2.4vh}
+.draw-tile{background:#fff;border:1px solid var(--line);border-top:5px solid var(--tc);border-radius:8px;padding:.8vh .6vw;font-size:1.05vw;line-height:1.4;text-align:left}
+.draw-tile b{display:block;color:var(--tc);font-size:1.1vw;margin-bottom:.3vh;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.draw-tile .done{font-weight:900;color:var(--ink)}
+.draw-tile .wait{color:#B4BAB7}
+.draw-tile.now{box-shadow:0 0 0 3px var(--tc)}
+
+.draw-slide .title{font-size:min(3.5vw,6.2vh);margin-bottom:1vh}
+.draw-slide .kicker{font-size:min(1.45vw,2.6vh)}
+.draw-guide{font-size:min(1.45vw,2.5vh)}
+.draw-round,.draw-sound{font-size:min(1.35vw,2.3vh)}
+.draw-card{min-height:0;margin:1.2vh auto 2vh;padding:1.6vh 2vw}
+.draw-topic{font-size:min(3.2vw,5.6vh)}
+.draw-phrase{font-size:min(1.5vw,2.6vh)}
+.draw-who{font-size:min(2.3vw,4vh);margin-top:1vh}
+.draw-who small{font-size:min(1.2vw,2.1vh)}
+.draw-btn{font-size:min(1.7vw,3vh);padding:1vh 2.6vw}
+.draw-reset{font-size:min(1.2vw,2.1vh)}
+.draw-track{margin-top:1.8vh}
+.draw-tile{font-size:min(1.05vw,1.9vh)}
+.draw-tile b{font-size:min(1.1vw,2vh)}
+@media(max-width:900px){.draw-wrap{max-width:92vw}.draw-guide,.draw-phrase{font-size:2.6vw}.draw-round,.draw-sound,.draw-reset{font-size:2.3vw}.draw-card{width:80vw}.draw-topic{font-size:5.4vw}.draw-card.empty .draw-topic{font-size:4vw}.draw-who{font-size:4.2vw}.draw-who small{font-size:2.2vw}.draw-btn{font-size:3.2vw}.draw-tile{font-size:2vw}.draw-tile b{font-size:2.1vw}}
+@media(prefers-reduced-motion:reduce){.draw-card.tick,.draw-card.land,.draw-who.pop .name{animation:none}}
+</style>
+<script>
+(function(){
+  var STUDENTS=['靖皓','尹辰','守恩','睿穎','宇軒'];          // 第 i 張卡的主人
+  var PHRASES=['生氣可以，但要好好說。','照顧好自己，也是保護大家。','卡住了，就說出來；我不是一個人。','先問一聲，聽到不要就停。','無聊的時候，正是練習專心的時候。'];
+  var COLORS=['#3E6690','#3E8272','#A97A2C','#6E5C93','#A85842'];
+  var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function derange(){var p;do{p=shuffle([0,1,2,3,4]);}while(p.some(function(v,i){return v===i;}));return p;} // 第二輪：每人都拿到別人的卡
+
+  var S;
+  function fresh(){S={round:1,left:[0,1,2,3,4],who:[[0,1,2,3,4],derange()],done:[{},{}],cur:null,showName:false,spinning:false,sound:S?S.sound:true};}
+  fresh();
+
+  // 加在 C 單元的最後一頁
+  slidesC.push({k:'C-1・抽籤挑戰',t:'抽一張提醒卡，上台試試看',draw:true});
+  var IDX=slidesC.length-1;
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='C')mount();};
+
+  function $(id){return document.getElementById(id);}
+  function mount(){
+    var slide=document.querySelectorAll('#stageC .slide')[IDX];if(!slide)return;slide.classList.add('draw-slide');
+    var w=document.createElement('div');w.className='draw-wrap';
+    w.innerHTML='<p class="draw-guide">第一輪：抽到的卡，由卡片的主人上台。第二輪：換人挑戰別人的卡！</p>'+
+      '<button class="draw-sound" id="drawSound" type="button"></button>'+
+      '<span class="draw-round" id="drawRound"></span>'+
+      '<div class="draw-card" id="drawCard"><div class="draw-topic" id="drawTopic"></div><div class="draw-phrase" id="drawPhrase"></div><div class="draw-who" id="drawWho"></div></div>'+
+      '<div><button class="draw-btn" id="drawBtn" type="button"></button><button class="draw-reset" id="drawReset" type="button">重新開始</button></div>'+
+      '<div class="draw-track" id="drawTrack"></div>';
+    slide.appendChild(w);
+    $('drawBtn').onclick=onDraw;
+    $('drawReset').onclick=function(){if(S.spinning)return;if(confirm('要清除這次的抽籤紀錄，重新開始嗎？')){fresh();paint();}};
+    $('drawSound').onclick=function(){S.sound=!S.sound;paint();};
+    paint();
+  }
+
+  function paint(){
+    if(!$('drawCard'))return;
+    var r=$('drawRound');r.textContent=S.round===1?'第一輪：自己的卡':'第二輪：換人挑戰';r.className='draw-round'+(S.round===2?' r2':'');
+    $('drawSound').textContent=S.sound?'🔊 音效':'🔇 靜音';
+    var card=$('drawCard');
+    if(S.cur===null){
+      card.classList.add('empty');card.style.setProperty('--cc','#D9CBB0');
+      $('drawTopic').textContent='🎴 按下「抽一張」';$('drawPhrase').textContent='';$('drawWho').innerHTML='';
+    }else{
+      var t=S.cur;card.classList.remove('empty');card.style.setProperty('--cc',COLORS[t]);
+      $('drawTopic').textContent=CARDS[t];
+      $('drawPhrase').textContent=S.showName?'「'+PHRASES[t]+'」':'';
+      var who=$('drawWho');
+      if(S.showName===false){who.innerHTML='';}
+      else{var s=S.showName;who.innerHTML='🙋 上台的是<span class="name">'+STUDENTS[s]+'</span>'+(S.round===2&&!S.spinning?'<small>這張卡第一輪是 '+STUDENTS[t]+' 的</small>':'');}
+    }
+    var btn=$('drawBtn');var finished=S.round===2&&S.left.length===0;
+    btn.disabled=S.spinning;
+    btn.textContent=S.spinning?'抽卡中…':finished?'🎉 兩輪都完成了！再玩一次':(S.round===1&&S.left.length===0)?'🔁 開始第二輪（換人）':'🎲 抽一張';
+    var tr=$('drawTrack');tr.innerHTML='';
+    for(var i=0;i<5;i++){
+      var d=document.createElement('div');d.className='draw-tile'+(S.cur===i&&!S.spinning?' now':'');d.style.setProperty('--tc',COLORS[i]);
+      var r1=S.done[0][i]!==undefined?'<span class="done">'+STUDENTS[S.done[0][i]]+'</span>':'<span class="wait">—</span>';
+      var r2=S.done[1][i]!==undefined?'<span class="done">'+STUDENTS[S.done[1][i]]+'</span>':'<span class="wait">？</span>';
+      d.innerHTML='<b>'+CARDS[i]+'</b>第一輪 '+r1+'<br>第二輪 '+r2;tr.appendChild(d);
+    }
+    fit();
+  }
+
+  function fit(){var slide=document.querySelector('#stageC .draw-slide'),stage=$('stageC');if(!slide||!stage||!slide.classList.contains('active'))return;
+    slide.style.zoom=1;var avail=stage.clientHeight-8,h=slide.offsetHeight;if(h>avail)slide.style.zoom=(avail/h).toFixed(3);}
+  window.addEventListener('resize',function(){setTimeout(fit,0);});
+  function bump(cls,el){el=el||$('drawCard');if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
+
+  var ac=null;
+  function beep(f,dur,vol){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(vol||.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+  function chime(){beep(660,.18,.15);setTimeout(function(){beep(990,.3,.15);},120);}
+
+  // 越轉越慢的輪播：list 依序閃過，最後停在 final
+  function spin(list,final,steps,onTick,done){
+    if(REDUCED||list.length<2){onTick(final);done();return;}
+    var seq=[],k=Math.floor(Math.random()*list.length);
+    for(var i=0;i<steps;i++){seq.push(list[(k+i)%list.length]);}
+    if(seq[seq.length-1]===final)seq.push(list[(list.indexOf(final)+1)%list.length]);
+    seq.push(final);
+    var i2=0;
+    (function step(){onTick(seq[i2]);beep(i2===seq.length-1?0:820,.04,.08);
+      if(i2===seq.length-1){done();return;}
+      var delay=55+Math.pow(i2/seq.length,2.4)*380;i2++;setTimeout(step,delay);})();
+  }
+
+  function onDraw(){
+    if(S.spinning)return;
+    if(S.round===2&&S.left.length===0){fresh();}
+    else if(S.round===1&&S.left.length===0){S.round=2;S.left=[0,1,2,3,4];S.cur=null;}
+    S.spinning=true;S.showName=false;
+    var t=S.left[Math.floor(Math.random()*S.left.length)];
+    var s=S.who[S.round-1][t];
+    spin(S.left,t,14,function(x){S.cur=x;paint();bump('tick');},function(){
+      bump('land');chime();
+      setTimeout(function(){
+        var others=STUDENTS.map(function(_,i){return i;}).filter(function(i){return i!==t;});
+        var names=S.round===1?[s]:others;
+        spin(names,s,10,function(x){S.showName=x;paint();},function(){
+          S.done[S.round-1][t]=s;S.left=S.left.filter(function(v){return v!==t;});
+          S.spinning=false;paint();bump('pop',$('drawWho'));chime();
+        });
+      },REDUCED?0:550);
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
