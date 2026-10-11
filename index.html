@@ -282,5 +282,21 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
 })();
 </script>
 
+<!-- ===== 新增：大廳 YouTube 頻道連結 ===== -->
+<style>
+.lobby-yt{align-self:flex-start;display:inline-flex;align-items:center;gap:.7vw;background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.2vh 1.6vw;font-size:min(1.5vw,2.6vh);font-weight:700;color:var(--ink);text-decoration:none}
+.lobby-yt .yt-icon{display:inline-flex;align-items:center;justify-content:center;width:2.2em;height:1.5em;border-radius:.4em;background:#E62117;color:#fff;font-size:.8em}
+.lobby-yt:hover{border-color:#E62117}
+.lobby-yt:focus-visible{outline:3px solid #23282B;outline-offset:3px}
+@media(max-width:900px){.lobby-yt{font-size:2.8vw}}
+</style>
+<script>
+(function(){
+  var a=document.createElement('a');a.className='lobby-yt';
+  a.href='https://www.youtube.com/@%E7%A6%8F%E6%9D%B1';a.target='_blank';a.rel='noopener';
+  a.innerHTML='<span class="yt-icon">▶</span>福東 YouTube 頻道';
+  document.getElementById('lobby').appendChild(a);
+})();
+</script>
 </body>
 </html>
