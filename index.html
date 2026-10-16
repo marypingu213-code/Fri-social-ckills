@@ -298,5 +298,103 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
   document.getElementById('lobby').appendChild(a);
 })();
 </script>
+<!-- ===== 新增：C 單元《福東沒有什麼大事》EP08 影片＋問題抽籤 ===== -->
+<style>
+.qdraw-slide .title{font-size:min(3.5vw,6.2vh);margin-bottom:1vh}
+.qdraw-slide .kicker{font-size:min(1.45vw,2.6vh)}
+.q-level{display:inline-block;background:var(--qc);color:#fff;border-radius:999px;padding:.4vh 1.2vw;font-size:min(1.3vw,2.3vh);font-weight:900;margin-bottom:1vh}
+.q-text{font-size:min(2.5vw,4.4vh);font-weight:900;line-height:1.4;color:var(--ink)}
+.draw-card.empty .q-text{color:var(--soft);font-size:min(2.2vw,3.8vh)}
+.q-hint-btn{margin-top:1.4vh;font-size:min(1.3vw,2.3vh);background:#fff;border:2px dashed var(--qc);color:var(--qc);border-radius:8px;padding:.6vh 1.2vw;cursor:pointer;font-weight:700}
+.q-hint{margin-top:1.4vh;font-size:min(1.5vw,2.6vh);color:var(--soft);line-height:1.5;background:var(--c-bg);border-radius:8px;padding:.8vh 1.2vw}
+.qdraw-slide .draw-card{--cc:var(--qc);width:52vw;min-height:24vh}
+.q-tile{text-align:center}
+.q-tile b{white-space:normal}
+.q-tile .mark{font-size:min(1.4vw,2.4vh);font-weight:900}
+.q-tile.used{background:#F2F3F1}
+.q-tile.used b{color:var(--soft)}
+@media(max-width:900px){.qdraw-slide .draw-card{width:84vw}.q-text{font-size:4.6vw}.q-level,.q-hint-btn{font-size:2.4vw}.q-hint{font-size:2.8vw}}
+</style>
+<script>
+(function(){
+  var COLOR='#A97A2C';
+  var Q=[
+    {lv:'★☆☆ 發生什麼事',short:'掃把怎麼了',q:'影片一開始，掃把怎麼了？扶起來大概要花多久？',hint:'回想一下：掃把倒在地上，其實扶起來只要 2 秒。'},
+    {lv:'★☆☆ 發生什麼事',short:'「他先的！」',q:'阿福和阿德一直說「他先的！」，後來越查越多，被說出來的還有哪些事？',hint:'例如：上課偷吃餅乾、打掃時躲在廁所……'},
+    {lv:'★★☆ 想一想為什麼',short:'為什麼越吵越大',q:'扶起掃把只要 2 秒，為什麼最後大家花了那麼久，事情還越變越大？',hint:'想一想：大家是在「解決問題」，還是在「找別人的錯」？'},
+    {lv:'★★☆ 想一想為什麼',short:'被指的感覺',q:'被別人用手指著說「是他先的！」，心裡會有什麼感覺？',hint:'可以用：我覺得＿＿＿，因為＿＿＿。'},
+    {lv:'★★★ 給正向建議',short:'給他好建議',q:'如果你的同學一直說「他先的！」，你會怎麼給他正向的建議？',hint:'試試看：「我們先一起把掃把扶起來，好嗎？」「先解決問題，再好好說。」'}
+  ];
+  var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var S={left:[0,1,2,3,4],used:{},cur:null,spinning:false,hint:false,sound:true};
+
+  slidesC.push({k:'C-1・影片時間',t:'《福東沒有什麼大事》他先的',s:'一支掃把倒在地上，扶起來只要 2 秒……可是阿福和阿德覺得，事情不能這麼草率！',video:'8NARf2eGZgA'});
+  slidesC.push({k:'C-1・影片討論',t:'抽一題，說說看',qdraw:true});
+  var IDX=slidesC.length-1;
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='C')mount();};
+
+  function $(id){return document.getElementById(id);}
+  function mount(){
+    var slide=document.querySelectorAll('#stageC .slide')[IDX];if(!slide)return;setTimeout(fit,0);
+    slide.classList.add('qdraw-slide');slide.style.setProperty('--qc',COLOR);
+    var w=document.createElement('div');w.className='draw-wrap';
+    w.innerHTML='<p class="draw-guide">看完影片，抽一個問題來回答。從「發生什麼事」到「給正向建議」，一共 5 題！</p>'+
+      '<button class="draw-sound" id="qSound" type="button"></button>'+
+      '<div class="draw-card" id="qCard"><div class="q-level" id="qLevel"></div><div class="q-text" id="qText"></div><div id="qHintBox"></div></div>'+
+      '<div><button class="draw-btn" id="qBtn" type="button"></button><button class="draw-reset" id="qReset" type="button">重新開始</button></div>'+
+      '<div class="draw-track" id="qTrack"></div>';
+    slide.appendChild(w);
+    $('qBtn').onclick=onDraw;
+    $('qReset').onclick=function(){if(S.spinning)return;if(confirm('要清除抽過的題目，重新開始嗎？')){S.left=[0,1,2,3,4];S.used={};S.cur=null;S.hint=false;paint();}};
+    $('qSound').onclick=function(){S.sound=!S.sound;paint();};
+    paint();
+  }
+  function paint(){
+    if(!$('qCard'))return;
+    $('qSound').textContent=S.sound?'🔊 音效':'🔇 靜音';
+    var card=$('qCard');
+    if(S.cur===null){card.classList.add('empty');$('qLevel').style.display='none';$('qText').textContent='🎴 按下「抽一題」';$('qHintBox').innerHTML='';}
+    else{
+      var q=Q[S.cur];card.classList.remove('empty');$('qLevel').style.display='';
+      $('qLevel').textContent='第 '+(S.cur+1)+' 題　'+q.lv;
+      $('qText').textContent=S.spinning?q.short:q.q;
+      var hb=$('qHintBox');
+      if(S.spinning){hb.innerHTML='';}
+      else if(S.hint){hb.innerHTML='<div class="q-hint">💡 '+q.hint+'</div>';}
+      else{hb.innerHTML='<button class="q-hint-btn" type="button">💡 需要提示</button>';hb.firstChild.onclick=function(){S.hint=true;paint();};}
+    }
+    var btn=$('qBtn');btn.disabled=S.spinning;
+    btn.textContent=S.spinning?'抽題中…':S.left.length===0?'🎉 5 題都完成了！再抽一輪':'🎲 抽一題';
+    var tr=$('qTrack');tr.innerHTML='';
+    Q.forEach(function(q,i){var d=document.createElement('div');var used=S.used[i]&&!(S.spinning&&S.cur===i);
+      d.className='draw-tile q-tile'+(used?' used':'')+(S.cur===i&&!S.spinning?' now':'');d.style.setProperty('--tc',COLOR);
+      d.innerHTML='<b>第 '+(i+1)+' 題</b>'+q.short+'<br><span class="mark">'+(used?'✅ 抽過了':'<span class="wait">？</span>')+'</span>';tr.appendChild(d);});
+    fit();
+  }
+  function fitOne(slide){var stage=$('stageC');if(!slide||!stage||!slide.classList.contains('active'))return;
+    slide.style.zoom=1;var avail=stage.clientHeight-8,h=slide.offsetHeight;if(h>avail)slide.style.zoom=(avail/h).toFixed(3);}
+  function fit(){var all=document.querySelectorAll('#stageC .slide');fitOne(all[IDX]);fitOne(all[IDX-1]);}
+  window.addEventListener('resize',function(){setTimeout(fit,0);});
+  function bump(cls){var el=$('qCard');if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
+  var ac=null;
+  function beep(f,dur,vol){if(!S.sound||!f)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(vol||.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+  function chime(){beep(660,.18,.15);setTimeout(function(){beep(990,.3,.15);},120);}
+  function onDraw(){
+    if(S.spinning)return;
+    if(S.left.length===0){S.left=[0,1,2,3,4];S.used={};}
+    var t=S.left[Math.floor(Math.random()*S.left.length)];
+    S.spinning=true;S.hint=false;
+    var list=S.left,seq=[];
+    if(!REDUCED&&list.length>1){var k=Math.floor(Math.random()*list.length);for(var i=0;i<14;i++)seq.push(list[(k+i)%list.length]);if(seq[seq.length-1]===t)seq.push(list[(list.indexOf(t)+1)%list.length]);}
+    seq.push(t);
+    var n=0;
+    (function step(){S.cur=seq[n];paint();bump('tick');
+      if(n===seq.length-1){
+        S.used[t]=true;S.left=S.left.filter(function(v){return v!==t;});S.spinning=false;paint();bump('land');chime();return;}
+      beep(820,.04,.08);var delay=55+Math.pow(n/seq.length,2.4)*380;n++;setTimeout(step,delay);})();
+  }
+})();
+</script>
 </body>
 </html>
