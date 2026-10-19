@@ -188,13 +188,13 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
 
   // 加在 C 單元的最後一頁
   slidesC.push({k:'C-1・抽籤挑戰',t:'抽一張提醒卡，上台試試看',draw:true});
-  var IDX=slidesC.length-1;
+  var MYOBJ=slidesC[slidesC.length-1];function curIdx(){return slidesC.indexOf(MYOBJ);}
   var baseRender=render;
   render=function(id){baseRender(id);if(id==='C')mount();};
 
   function $(id){return document.getElementById(id);}
   function mount(){
-    var slide=document.querySelectorAll('#stageC .slide')[IDX];if(!slide)return;slide.classList.add('draw-slide');
+    var slide=document.querySelectorAll('#stageC .slide')[curIdx()];if(!slide)return;slide.classList.add('draw-slide');
     var w=document.createElement('div');w.className='draw-wrap';
     w.innerHTML='<p class="draw-guide">第一輪：抽到的卡，由卡片的主人上台。第二輪：換人挑戰別人的卡！</p>'+
       '<button class="draw-sound" id="drawSound" type="button"></button>'+
@@ -330,13 +330,13 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
 
   slidesC.push({k:'C-1・影片時間',t:'《福東沒有什麼大事》他先的',s:'一支掃把倒在地上，扶起來只要 2 秒……可是阿福和阿德覺得，事情不能這麼草率！',video:'8NARf2eGZgA'});
   slidesC.push({k:'C-1・影片討論',t:'抽一題，說說看',qdraw:true});
-  var IDX=slidesC.length-1;
+  var MYOBJ=slidesC[slidesC.length-1];function curIdx(){return slidesC.indexOf(MYOBJ);}
   var baseRender=render;
   render=function(id){baseRender(id);if(id==='C')mount();};
 
   function $(id){return document.getElementById(id);}
   function mount(){
-    var slide=document.querySelectorAll('#stageC .slide')[IDX];if(!slide)return;setTimeout(fit,0);
+    var slide=document.querySelectorAll('#stageC .slide')[curIdx()];if(!slide)return;setTimeout(fit,0);
     slide.classList.add('qdraw-slide');slide.style.setProperty('--qc',COLOR);
     var w=document.createElement('div');w.className='draw-wrap';
     w.innerHTML='<p class="draw-guide">看完影片，抽一個問題來回答。從「發生什麼事」到「給正向建議」，一共 5 題！</p>'+
@@ -374,7 +374,7 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
   }
   function fitOne(slide){var stage=$('stageC');if(!slide||!stage||!slide.classList.contains('active'))return;
     slide.style.zoom=1;var avail=stage.clientHeight-8,h=slide.offsetHeight;if(h>avail)slide.style.zoom=(avail/h).toFixed(3);}
-  function fit(){var all=document.querySelectorAll('#stageC .slide');fitOne(all[IDX]);fitOne(all[IDX-1]);}
+  function fit(){var all=document.querySelectorAll('#stageC .slide');fitOne(all[curIdx()]);fitOne(all[curIdx()-1]);}
   window.addEventListener('resize',function(){setTimeout(fit,0);});
   function bump(cls){var el=$('qCard');if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
   var ac=null;
@@ -394,6 +394,221 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
         S.used[t]=true;S.left=S.left.filter(function(v){return v!==t;});S.spinning=false;paint();bump('land');chime();return;}
       beep(820,.04,.08);var delay=55+Math.pow(n/seq.length,2.4)*380;n++;setTimeout(step,delay);})();
   }
+})();
+</script>
+<!-- ===== 新增：C 單元開頭「班級星星榜」 ===== -->
+<style>
+.star-slide .title{font-size:min(3.5vw,6.2vh);margin-bottom:1.6vh}
+.star-slide .kicker{font-size:min(1.45vw,2.6vh)}
+.star-list{display:grid;gap:1.2vh}
+.star-row{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:1.4vw;background:#fff;border:1px solid var(--line);border-radius:12px;padding:1.1vh 1.4vw}
+.star-row.full{border:3px solid var(--c);background:#FFF9EC}
+.star-class{font-size:min(2.4vw,4.4vh);font-weight:900;color:var(--c);min-width:4.5em}
+.star-class small{display:block;font-size:.5em;color:var(--soft);font-weight:700}
+.star-track{display:grid;grid-template-columns:repeat(30,1fr);gap:.15vw}
+.star-track span{font-size:min(1.25vw,2.3vh);line-height:1;text-align:center;filter:grayscale(1);opacity:.22}
+.star-track span:nth-child(10n){margin-right:.5vw}
+.star-track span.on{filter:none;opacity:1}
+.star-track span.new{animation:starPop .6s ease-out}
+.star-num{font-size:min(2vw,3.6vh);font-weight:900;min-width:4.4em;text-align:right;white-space:nowrap}
+.star-num small{font-size:.6em;color:var(--soft)}
+.star-btns{display:flex;gap:.6vw}
+.star-btns button{font-size:min(1.5vw,2.7vh);font-weight:900;border-radius:10px;cursor:pointer;padding:.7vh 1vw;white-space:nowrap;flex-shrink:0}
+.star-class{min-width:3.2em}
+.star-plus{background:var(--c);color:#fff;border:0;box-shadow:0 4px 0 #7d5a20}
+.star-plus:active{transform:translateY(3px);box-shadow:0 1px 0 #7d5a20}
+.star-minus{background:#fff;color:var(--soft);border:1px solid var(--line)}
+.star-btns button:disabled{opacity:.4;cursor:default}
+.star-btns button:focus-visible{outline:3px solid #23282B;outline-offset:2px}
+.star-note{font-size:min(1.2vw,2.1vh);color:var(--soft);margin-top:1.4vh}
+@keyframes starPop{0%{transform:scale(.2) rotate(-40deg)}60%{transform:scale(1.8) rotate(10deg)}100%{transform:scale(1)}}
+@media(max-width:900px){.star-row{grid-template-columns:auto 1fr;}.star-class{font-size:4.4vw}.star-track span{font-size:2.2vw}.star-num{font-size:3.6vw;text-align:left}.star-btns button{font-size:3vw}.star-note{font-size:2.4vw}}
+@media(prefers-reduced-motion:reduce){.star-track span.new{animation:none}}
+</style>
+<script>
+(function(){
+  var MAX=30,KEY='socialSkillsC_stars_v1';
+  var CLASSES=['406','504','601','603','604'];
+  var START={'406':10,'504':10,'601':10,'603':8,'604':8};   // 起始星星數
+  var stars={};
+  try{var saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved)stars=saved;}catch(e){}
+  CLASSES.forEach(function(c){if(typeof stars[c]!=='number')stars[c]=START[c];});
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(stars));}catch(e){}}
+  var justAdded=null;
+
+  slidesC.unshift({k:'C 單元・班級星星榜',t:'⭐ 我們的星星，集滿 30 顆！',stars:true});
+  var MYOBJ=slidesC[0];
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='C')mount();};
+  function slide(){return document.querySelectorAll('#stageC .slide')[slidesC.indexOf(MYOBJ)];}
+
+  function mount(){
+    var sl=slide();if(!sl)return;sl.classList.add('star-slide');
+    var w=document.createElement('div');w.id='starBoard';sl.appendChild(w);
+    var n=document.createElement('p');n.className='star-note';n.textContent='每次上課表現好，按「＋1」加一顆星；按錯了可以按「－1」。星星數會自動記在這台電腦上。';sl.appendChild(n);
+    paint();
+  }
+  function paint(){
+    var w=document.getElementById('starBoard');if(!w)return;
+    var html='<div class="star-list">';
+    CLASSES.forEach(function(c){
+      var v=stars[c],t='';
+      for(var i=1;i<=MAX;i++)t+='<span class="'+(i<=v?'on':'')+(justAdded===c&&i===v?' new':'')+'">⭐</span>';
+      html+='<div class="star-row'+(v>=MAX?' full':'')+'"><div class="star-class">'+c+(v>=MAX?'<small>🏆 集滿了！</small>':'')+'</div>'+
+        '<div class="star-track" aria-label="'+c+' 有 '+v+' 顆星">'+t+'</div>'+
+        '<div class="star-num">'+v+' <small>/ '+MAX+'</small></div>'+
+        '<div class="star-btns"><button class="star-minus" type="button" data-c="'+c+'" data-d="-1"'+(v<=0?' disabled':'')+'>－1</button>'+
+        '<button class="star-plus" type="button" data-c="'+c+'" data-d="1"'+(v>=MAX?' disabled':'')+'>＋1 ⭐</button></div></div>';
+    });
+    w.innerHTML=html+'</div>';
+    w.querySelectorAll('button').forEach(function(b){b.onclick=function(){
+      var c=b.dataset.c,d=+b.dataset.d;stars[c]=Math.max(0,Math.min(MAX,stars[c]+d));save();
+      justAdded=d>0?c:null;paint();if(d>0)chime(stars[c]>=MAX);justAdded=null;};});
+    fit();
+  }
+  function fit(){var sl=slide(),stage=document.getElementById('stageC');if(!sl||!stage||!sl.classList.contains('active'))return;
+    sl.style.zoom=1;var avail=stage.clientHeight-8,h=sl.offsetHeight;if(h>avail)sl.style.zoom=(avail/h).toFixed(3);}
+  window.addEventListener('resize',function(){setTimeout(fit,0);});
+  var ac=null;
+  function beep(f,dur){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.14,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+  function chime(big){beep(784,.15);setTimeout(function(){beep(1175,.25);},110);if(big)setTimeout(function(){beep(1568,.5);},260);}
+})();
+</script>
+<!-- ===== 新增：開啟 D、E 單元（影片＋問題抽籤） ===== -->
+<style>
+:root{--d:#6E5C93;--d-bg:#F0ECF6;--e:#A85842;--e-bg:#F7ECE8}
+#unitD{background:var(--d-bg)}#unitE{background:var(--e-bg)}
+.qdraw-slide .q-hint{background:var(--qbg,var(--c-bg))}
+.qdraw-slide .draw-btn{background:var(--qc);box-shadow:0 5px 0 var(--qsh,#7d5a20)}
+.qdraw-slide .draw-btn:active{box-shadow:0 2px 0 var(--qsh,#7d5a20)}
+</style>
+<script>
+(function(){
+  var UNITS={
+    D:{color:'#6E5C93',bg:'#F0ECF6',shadow:'#4b3e66'},
+    E:{color:'#A85842',bg:'#F7ECE8',shadow:'#73392a'}
+  };
+  // ---------- 投影片內容 ----------
+  var slidesD=[
+    {k:'D・單元介紹',t:'培養同理心：我看到你了',p:['同理心，就是想一想：<strong>別人現在的感覺是什麼？</strong>','我的一個小動作，可能讓別人安心，也可能讓別人不舒服。','這個單元，我們用兩支影片來練習「看見別人」。'],f:'一句話記住：<strong>心裡有別人，做事會更好。</strong>'},
+    {k:'D・影片時間①',t:'《福東沒有什麼大事》今天是在哈囉',s:'早上遇見主任，東東說「主任早」，阿福卻安靜地走過去……',video:'DbX8VM7aa0k'},
+    {k:'D・影片討論①',t:'抽一題，說說看',qset:'D1'},
+    {k:'D・影片時間②',t:'《福東沒有什麼大事》走廊不是跑道',s:'走廊很長、地板很平、前面又剛好沒人，阿福覺得很適合跑一下……',video:'tQ59yX_GkQY'},
+    {k:'D・影片討論②',t:'抽一題，說說看',qset:'D2'},
+    {k:'D・回顧',t:'我看到你了',p:['打招呼，是在告訴對方：<strong>「我看到你了。」</strong>','走廊慢慢走，是<strong>替別人留一條安心的路</strong>。','做事之前，先想一想：這樣做，別人會有什麼感覺？'],f:'這週挑戰：每天<strong>主動跟一個人打招呼</strong>，在走廊<strong>慢慢走</strong>。'}
+  ];
+  var slidesE=[
+    {k:'E・單元介紹',t:'遇到事情，先思考再判斷',p:['聽到一句話、看到一樣東西，<strong>先停一下</strong>。','想一想：這是真的嗎？這樣對我好嗎？','想清楚了，再做出選擇。'],chips:['✋ 停一下','🤔 想一想','✅ 再選擇'],f:'一句話記住：<strong>先想一想，再決定。</strong>'},
+    {k:'E・影片時間',t:'《福東沒有什麼大事》水壺今天特別輕',s:'水壺每天都很認真來上學，只是有時候……水沒有來。',video:'Df_h7Esj4Qo'},
+    {k:'E・影片討論',t:'抽一題，說說看',qset:'E1'},
+    {k:'E・回顧',t:'先想一想，再選擇',p:['手搖飲說「我裡面也很多水」，<strong>聽起來很有道理，但要再想一想</strong>。','含糖飲料喝太多，可能蛀牙、變胖，影響身體健康。','口渴的時候，<strong>白開水</strong>是最好的選擇；飲料偶爾喝就好。'],f:'這週挑戰：<strong>每天把水壺裡的水喝完</strong>，用到提醒卡「② 保持健康的訣竅」。'}
+  ];
+  // chips + p 同時出現時，原本的版面只會顯示 chips；把 E 介紹拆成 chips 版
+  slidesE[0]={k:'E・單元介紹',t:'遇到事情，先思考再判斷',chips:['✋ 停一下','🤔 想一想：這是真的嗎？對我好嗎？','✅ 再做選擇'],f:'聽到一句話、看到一樣東西，先停一下。<br>一句話記住：<strong>先想一想，再決定。</strong>'};
+
+  var QSETS={
+    D1:[
+      {lv:'★☆☆ 發生什麼事',short:'早上遇到主任',q:'早上遇到主任，東東說了什麼？阿福一開始做了什麼？',hint:'東東說「主任早」，阿福卻安靜地走過去。'},
+      {lv:'★☆☆ 發生什麼事',short:'「哈囉比較省」',q:'阿福後來用哪一句話打招呼？他為什麼覺得這句話很好用？',hint:'「哈囉」早上、中午、下午都能用，所以他說「哈囉比較省」。'},
+      {lv:'★★☆ 想一想為什麼',short:'早安的意思',q:'有人跟你說「早安」，他其實想告訴你什麼？',hint:'不是在通知「現在是早上」，而是在說「我看到你了」。'},
+      {lv:'★★☆ 想一想感受',short:'被忽略的感覺',q:'如果你跟別人打招呼，對方卻安靜地走過去，你會有什麼感覺？',hint:'可以用：我覺得＿＿＿，因為＿＿＿。'},
+      {lv:'★★★ 做做看',short:'我會這樣打招呼',q:'明天早上遇到老師或同學，你會怎麼打招呼？現在做做看！',hint:'看著對方、微笑，說「老師早」「○○早安」。'}
+    ],
+    D2:[
+      {lv:'★☆☆ 發生什麼事',short:'阿福想跑步',q:'阿福為什麼覺得走廊很適合跑一下？',hint:'走廊很長、地板很平、前面又剛好沒人。'},
+      {lv:'★☆☆ 發生什麼事',short:'東東說的話',q:'東東跟阿福說了哪一句話，提醒他走廊不是只有他？',hint:'「可是這裡又不是只有你。」'},
+      {lv:'★★☆ 想一想為什麼',short:'「我又沒撞到人」',q:'阿福說「我剛剛也沒有撞到人啊」，東東怎麼回答？你同意東東嗎？為什麼？',hint:'東東說：「那是因為人家剛好沒走出來。」'},
+      {lv:'★★☆ 想一想感受',short:'走廊上的人',q:'走廊上可能有哪些人？如果他們被撞到，會發生什麼事？心裡會有什麼感覺？',hint:'抱著作業的人、端著東西的人、剛走出教室的人……'},
+      {lv:'★★★ 給正向建議',short:'提醒奔跑的同學',q:'如果看到同學在走廊奔跑，你可以怎麼用正向的方式提醒他？',hint:'試試看：「轉角可能有人，我們慢慢走吧！」'}
+    ],
+    E1:[
+      {lv:'★☆☆ 發生什麼事',short:'水壺為什麼輕',q:'影片裡，水壺今天為什麼「特別輕」？',hint:'水壺有來上學，可是裡面的水沒有來。'},
+      {lv:'★☆☆ 發生什麼事',short:'咖啡和手搖飲',q:'咖啡和手搖飲說了什麼？它們想讓大家怎麼做？',hint:'咖啡說「放心，有我」；手搖飲說「我裡面也很多水耶」。'},
+      {lv:'★★☆ 先思考再判斷',short:'「我也很多水」',q:'手搖飲說「我裡面也很多水」，這句話可以相信嗎？先想一想再回答。',hint:'想一想：它裡面除了水，還有什麼？糖、珍珠、奶蓋……'},
+      {lv:'★★☆ 想一想為什麼',short:'喝太多飲料',q:'含糖飲料喝太多，身體可能會發生什麼事？',hint:'蛀牙、變胖、脂肪肝……身體會「抗議」喔！'},
+      {lv:'★★★ 給正向建議',short:'給同學好建議',q:'同學說「口渴喝手搖飲就好啦！」你會怎麼先想一想，再給他正向的建議？',hint:'停 → 想 → 說：「白開水最解渴，飲料偶爾喝就好。」'}
+    ]
+  };
+
+  // ---------- 建立 D、E 單元畫面 ----------
+  ['D','E'].forEach(function(id){
+    var v=document.createElement('div');v.id='unit'+id;v.className='view';var c='var(--'+id.toLowerCase()+')';
+    v.innerHTML='<div class="top"><div class="top-left"><button class="back" style="color:'+c+'" onclick="backHome()">← 回大廳</button></div><div><span class="count" id="count'+id+'"></span> <button class="full" onclick="toggleFull()">⛶ 全螢幕</button></div></div><div class="stage" id="stage'+id+'"></div><div class="nav"><button id="prev'+id+'" style="background:'+c+'" onclick="move(\''+id+'\',-1)">上一頁</button><div class="dots" id="dots'+id+'" style="color:'+c+'"></div><button id="next'+id+'" style="background:'+c+'" onclick="move(\''+id+'\',1)">下一頁</button></div>';
+    document.getElementById('lobby').parentNode.appendChild(v);
+    pos[id]=0;
+  });
+  decks.D=slidesD;decks.E=slidesE;
+  window.slidesD=slidesD;window.slidesE=slidesE;
+
+  // 大廳：把 D、E 從「製作中」改成可以點
+  document.querySelectorAll('#doors .door').forEach(function(b){
+    var L=b.querySelector('.door-letter');if(!L)return;var id=L.textContent.trim();
+    if(id==='D'||id==='E'){b.disabled=false;var st=b.querySelector('.door-status');if(st)st.textContent='';b.onclick=function(){openUnit(id);};}
+  });
+
+  // ---------- 問題抽籤（可重複使用） ----------
+  var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var STATE={};
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='D'||id==='E'){var list=decks[id];list.forEach(function(x,i){if(x.qset)mountQ(id,i,x.qset);if(x.video)fitSlide(id,i);});}};
+
+  function slideEl(id,i){return document.querySelectorAll('#stage'+id+' .slide')[i];}
+  function fitSlide(id,i){setTimeout(function(){var sl=slideEl(id,i),st=document.getElementById('stage'+id);if(!sl||!st||!sl.classList.contains('active'))return;
+    sl.style.zoom=1;var avail=st.clientHeight-8,h=sl.offsetHeight;if(h>avail)sl.style.zoom=(avail/h).toFixed(3);},0);}
+  window.addEventListener('resize',function(){['D','E'].forEach(function(id){if(document.getElementById('unit'+id).classList.contains('active'))decks[id].forEach(function(x,i){if(x.qset||x.video)fitSlide(id,i);});});});
+
+  function mountQ(id,i,key){
+    var Q=QSETS[key],U=UNITS[id],P='q'+key;
+    var S=STATE[key]=STATE[key]||{left:[0,1,2,3,4],used:{},cur:null,spinning:false,hint:false,sound:true};
+    var sl=slideEl(id,i);if(!sl)return;
+    sl.classList.add('qdraw-slide');sl.style.setProperty('--qc',U.color);sl.style.setProperty('--qbg',U.bg);sl.style.setProperty('--qsh',U.shadow);
+    var w=document.createElement('div');w.className='draw-wrap';
+    w.innerHTML='<p class="draw-guide">看完影片，抽一個問題來回答。從「發生什麼事」到「做做看、給建議」，一共 5 題！</p>'+
+      '<button class="draw-sound" id="'+P+'Sound" type="button"></button>'+
+      '<div class="draw-card" id="'+P+'Card"><div class="q-level" id="'+P+'Level"></div><div class="q-text" id="'+P+'Text"></div><div id="'+P+'Hint"></div></div>'+
+      '<div><button class="draw-btn" id="'+P+'Btn" type="button"></button><button class="draw-reset" id="'+P+'Reset" type="button">重新開始</button></div>'+
+      '<div class="draw-track" id="'+P+'Track"></div>';
+    sl.appendChild(w);
+    function $(s){return document.getElementById(P+s);}
+    function paint(){
+      if(!$('Card'))return;
+      $('Sound').textContent=S.sound?'🔊 音效':'🔇 靜音';
+      var card=$('Card');
+      if(S.cur===null){card.classList.add('empty');$('Level').style.display='none';$('Text').textContent='🎴 按下「抽一題」';$('Hint').innerHTML='';}
+      else{var q=Q[S.cur];card.classList.remove('empty');$('Level').style.display='';
+        $('Level').textContent='第 '+(S.cur+1)+' 題　'+q.lv;$('Text').textContent=S.spinning?q.short:q.q;
+        var hb=$('Hint');
+        if(S.spinning)hb.innerHTML='';
+        else if(S.hint)hb.innerHTML='<div class="q-hint">💡 '+q.hint+'</div>';
+        else{hb.innerHTML='<button class="q-hint-btn" type="button">💡 需要提示</button>';hb.firstChild.onclick=function(){S.hint=true;paint();};}}
+      var btn=$('Btn');btn.disabled=S.spinning;
+      btn.textContent=S.spinning?'抽題中…':S.left.length===0?'🎉 5 題都完成了！再抽一輪':'🎲 抽一題';
+      var tr=$('Track');tr.innerHTML='';
+      Q.forEach(function(q,j){var d=document.createElement('div');var used=S.used[j]&&!(S.spinning&&S.cur===j);
+        d.className='draw-tile q-tile'+(used?' used':'')+(S.cur===j&&!S.spinning?' now':'');d.style.setProperty('--tc',U.color);
+        d.innerHTML='<b>第 '+(j+1)+' 題</b>'+q.short+'<br><span class="mark">'+(used?'✅ 抽過了':'<span class="wait">？</span>')+'</span>';tr.appendChild(d);});
+      fitSlide(id,i);
+    }
+    function bump(cls){var el=$('Card');if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
+    function draw(){
+      if(S.spinning)return;
+      if(S.left.length===0){S.left=[0,1,2,3,4];S.used={};}
+      var t=S.left[Math.floor(Math.random()*S.left.length)];S.spinning=true;S.hint=false;
+      var list=S.left,seq=[];
+      if(!REDUCED&&list.length>1){var k=Math.floor(Math.random()*list.length);for(var n=0;n<14;n++)seq.push(list[(k+n)%list.length]);if(seq[seq.length-1]===t)seq.push(list[(list.indexOf(t)+1)%list.length]);}
+      seq.push(t);var n2=0;
+      (function step(){S.cur=seq[n2];paint();bump('tick');
+        if(n2===seq.length-1){S.used[t]=true;S.left=S.left.filter(function(v){return v!==t;});S.spinning=false;paint();bump('land');chime(S);return;}
+        beep(S,820,.04,.08);var delay=55+Math.pow(n2/seq.length,2.4)*380;n2++;setTimeout(step,delay);})();
+    }
+    $('Btn').onclick=draw;
+    $('Reset').onclick=function(){if(S.spinning)return;if(confirm('要清除抽過的題目，重新開始嗎？')){S.left=[0,1,2,3,4];S.used={};S.cur=null;S.hint=false;paint();}};
+    $('Sound').onclick=function(){S.sound=!S.sound;paint();};
+    paint();
+  }
+  var ac=null;
+  function beep(S,f,dur,vol){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(vol||.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+  function chime(S){beep(S,660,.18,.15);setTimeout(function(){beep(S,990,.3,.15);},120);}
 })();
 </script>
 </body>
