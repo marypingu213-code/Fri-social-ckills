@@ -622,5 +622,129 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
   function chime(S){beep(S,660,.18,.15);setTimeout(function(){beep(S,990,.3,.15);},120);}
 })();
 </script>
+<!-- ===== 新增：D 單元「期中考小撇步」＋班級輪盤 ===== -->
+<style>
+.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw;margin-top:1.6vh}
+.tip{background:#fff;border:1px solid var(--line);border-top:6px solid var(--d);border-radius:12px;padding:1.6vh 1.2vw;display:flex;gap:.9vw;align-items:flex-start}
+.tip .n{flex:none;width:2.2em;height:2.2em;border-radius:50%;background:var(--d);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:min(1.4vw,2.5vh)}
+.tip .ic{font-size:min(2.6vw,4.6vh);line-height:1}
+.tip b{display:block;font-size:min(1.9vw,3.4vh);line-height:1.35}
+.tip small{display:block;font-size:min(1.25vw,2.2vh);color:var(--soft);margin-top:.5vh;line-height:1.45}
+.tip.key{border-top-color:#A85842;background:#FFF7F3}
+.tip.key .n{background:#A85842}
+.wheel-wrap{display:grid;grid-template-columns:auto 1fr;gap:3vw;align-items:center;margin-top:1.4vh}
+.wheel-box{position:relative;width:min(30vw,46vh);aspect-ratio:1}
+.wheel{position:absolute;inset:0;border-radius:50%;border:6px solid #fff;box-shadow:0 6px 18px rgba(0,0,0,.15)}
+.wheel-label{position:absolute;left:50%;top:50%;width:0;height:0}
+.wheel-label span{position:absolute;left:-2.5em;width:5em;text-align:center;font-weight:900;color:#fff;font-size:min(2.2vw,3.6vh);text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.wheel-pin{position:absolute;left:50%;top:-1.6vh;transform:translateX(-50%);width:0;height:0;border-left:min(1.4vw,2.4vh) solid transparent;border-right:min(1.4vw,2.4vh) solid transparent;border-top:min(2.6vw,4.4vh) solid #23282B;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.wheel-hub{position:absolute;left:50%;top:50%;width:18%;height:18%;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:min(2vw,3.4vh)}
+.wq-card{background:#fff;border:4px solid var(--wc,#D9CBB0);border-radius:18px;box-shadow:0 8px 0 var(--wc,#D9CBB0);padding:2.2vh 2vw;min-height:26vh;display:flex;flex-direction:column;justify-content:center}
+.wq-who{font-size:min(2.6vw,4.4vh);font-weight:900;color:var(--wc,var(--soft))}
+.wq-q{font-size:min(2.3vw,4vh);font-weight:900;line-height:1.4;margin-top:1.2vh}
+.wq-ans{margin-top:1.4vh;font-size:min(1.5vw,2.6vh);color:var(--soft);background:var(--d-bg);border-radius:8px;padding:.8vh 1vw;line-height:1.5}
+.wq-ans-btn{margin-top:1.4vh;align-self:flex-start;font-size:min(1.3vw,2.3vh);background:#fff;border:2px dashed var(--d);color:var(--d);border-radius:8px;padding:.6vh 1.2vw;cursor:pointer;font-weight:700}
+.wq-ctrl{margin-top:2.2vh;display:flex;align-items:center;gap:1vw;flex-wrap:wrap}
+.wq-ctrl .draw-btn{background:var(--d);box-shadow:0 5px 0 #4b3e66}
+.wq-done{display:flex;gap:.6vw;margin-top:1.8vh;flex-wrap:wrap}
+.wq-done span{font-size:min(1.3vw,2.3vh);font-weight:900;border-radius:999px;padding:.4vh 1vw;border:2px solid var(--line);color:#B4BAB7;background:#fff}
+.wq-done span.on{color:#fff;border-color:transparent}
+.wq-card.land{animation:drawLand .5s ease-out}
+@media(max-width:900px){.tips-grid{grid-template-columns:1fr 1fr}.wheel-wrap{grid-template-columns:1fr}.wheel-box{width:60vw;margin:0 auto}}
+</style>
+<script>
+(function(){
+  var CLS=['406','504','601','603','604'];
+  var CCOL=['#6E5C93','#3E8272','#A97A2C','#3E6690','#A85842'];
+  var TIPS=[
+    {ic:'👀',t:'仔細看題目',d:'題目看清楚，看完再寫。'},
+    {ic:'⏭️',t:'不會的先跳過',d:'先寫會的，最後再回來想。'},
+    {ic:'✍️',t:'專心寫題目',d:'眼睛看自己的考卷。'},
+    {ic:'📖',t:'沒把握的要先複習',d:'考試前，先把不熟的再看一次。'},
+    {ic:'🚻',t:'考試前先去上廁所',d:'考試時就不用急著離開。'},
+    {ic:'🧘',t:'下課是用來休息的',d:'喝水、上廁所、準備下一科，不跑跑跳跳。',key:true}
+  ];
+  var QS=[
+    {q:'拿到考卷，第一件事要做什麼？',a:'先仔細看題目，看清楚再寫。'},
+    {q:'遇到不會寫的題目，可以怎麼辦？',a:'先跳過，把會的寫完，最後再回來想。'},
+    {q:'考試的時候，旁邊有聲音或有人說話，你要怎麼做？',a:'專心寫自己的題目，眼睛看自己的考卷。'},
+    {q:'考試前，覺得有一課沒把握，要怎麼辦？',a:'考試前先複習那一課。'},
+    {q:'考試前，為什麼要先去上廁所？',a:'這樣考試時就不用中途離開，可以專心寫。'},
+    {q:'期中考中間的下課，應該做什麼？可以跑跑跳跳嗎？',a:'不行喔！下課是讓我們休息：喝水、上廁所、準備下一科。'}
+  ];
+  var tipsSlide={k:'D・期中考加油',t:'期中考小撇步',mtips:true};
+  var wheelSlide={k:'D・期中考加油',t:'輪盤轉轉轉：輪到哪一班？',mwheel:true};
+  decks.D.unshift(tipsSlide,wheelSlide);   // 期中考在這週，放在 D 單元最前面
+
+  var S={rot:0,clsLeft:[0,1,2,3,4],qLeft:[0,1,2,3,4,5],done:{},cls:null,q:null,ans:false,spinning:false};
+  var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='D'){mountTips();mountWheel();}};
+  function sl(obj){return document.querySelectorAll('#stageD .slide')[decks.D.indexOf(obj)];}
+  function fit(el){setTimeout(function(){var st=document.getElementById('stageD');if(!el||!st||!el.classList.contains('active'))return;el.style.zoom=1;var a=st.clientHeight-8,h=el.offsetHeight;if(h>a)el.style.zoom=(a/h).toFixed(3);},0);}
+  window.addEventListener('resize',function(){if(document.getElementById('unitD').classList.contains('active')){fit(sl(tipsSlide));fit(sl(wheelSlide));}});
+
+  function mountTips(){
+    var el=sl(tipsSlide);if(!el)return;
+    var g=document.createElement('div');g.className='tips-grid';
+    g.innerHTML=TIPS.map(function(t,i){return '<div class="tip'+(t.key?' key':'')+'"><span class="n">'+(i+1)+'</span><div><span class="ic">'+t.ic+'</span><b>'+t.t+'</b><small>'+t.d+'</small></div></div>';}).join('');
+    el.appendChild(g);fit(el);
+  }
+
+  function mountWheel(){
+    var el=sl(wheelSlide);if(!el)return;
+    var stops=CCOL.map(function(c,i){return c+' '+(i*72)+'deg '+((i+1)*72)+'deg';}).join(',');
+    var labels=CLS.map(function(c,i){var a=i*72+36;return '<div class="wheel-label" style="transform:rotate('+a+'deg)"><span style="top:calc(-1 * min(11vw,17vh))">'+c+'</span></div>';}).join('');
+    var w=document.createElement('div');w.className='wheel-wrap';
+    w.innerHTML='<div><div class="wheel-box"><div class="wheel-pin"></div><div class="wheel" id="wWheel" style="background:conic-gradient('+stops+');transform:rotate('+S.rot+'deg)">'+labels+'</div><div class="wheel-hub">🎯</div></div></div>'+
+      '<div><div class="wq-card" id="wCard"></div><div class="wq-ctrl"><button class="draw-btn" id="wBtn" type="button"></button><button class="draw-reset" id="wReset" type="button">重新開始</button></div><div class="wq-done" id="wDone"></div></div>';
+    el.appendChild(w);
+    document.getElementById('wBtn').onclick=spin;
+    document.getElementById('wReset').onclick=function(){if(S.spinning)return;if(confirm('要清除這次的輪盤紀錄，重新開始嗎？')){S.clsLeft=[0,1,2,3,4];S.qLeft=[0,1,2,3,4,5];S.done={};S.cls=null;S.q=null;S.ans=false;paint();}};
+    paint();fit(el);
+  }
+  function paint(){
+    var card=document.getElementById('wCard');if(!card)return;
+    if(S.cls===null||S.spinning){card.style.removeProperty('--wc');
+      card.innerHTML='<div class="wq-who">'+(S.spinning?'🎡 輪盤轉動中……':'🎡 按下「轉輪盤」')+'</div><div class="wq-q" style="color:var(--soft);font-size:min(1.8vw,3vh)">輪到的班級，要試著回答一個期中考小撇步的問題！</div>';}
+    else{card.style.setProperty('--wc',CCOL[S.cls]);var q=QS[S.q];
+      card.innerHTML='<div class="wq-who">🙋 輪到 '+CLS[S.cls]+'！</div><div class="wq-q">'+q.q+'</div>'+(S.ans?'<div class="wq-ans">💡 '+q.a+'</div>':'<button class="wq-ans-btn" id="wAns" type="button">💡 看答案</button>');
+      var b=document.getElementById('wAns');if(b)b.onclick=function(){S.ans=true;paint();};}
+    var btn=document.getElementById('wBtn');btn.disabled=S.spinning;
+    var all=S.clsLeft.length===0;
+    btn.textContent=S.spinning?'轉動中…':all?'🎉 五班都答過了！再轉一輪':'🎡 轉輪盤';
+    document.getElementById('wDone').innerHTML=CLS.map(function(c,i){var on=S.done[i];return '<span class="'+(on?'on':'')+'" style="'+(on?'background:'+CCOL[i]:'')+'">'+(on?'✅ ':'')+c+'</span>';}).join('');
+    fit(sl(wheelSlide));
+  }
+  function spin(){
+    if(S.spinning)return;
+    if(S.clsLeft.length===0){S.clsLeft=[0,1,2,3,4];S.done={};}
+    if(S.qLeft.length===0)S.qLeft=[0,1,2,3,4,5];
+    var c=S.clsLeft[Math.floor(Math.random()*S.clsLeft.length)];
+    var q=S.qLeft[Math.floor(Math.random()*S.qLeft.length)];
+    S.spinning=true;S.ans=false;paint();
+    var center=c*72+36,jitter=(Math.random()*44)-22;
+    var target=360-center+jitter;                       // 讓這一班停在指針下
+    var cur=((S.rot%360)+360)%360;
+    var delta=(target-cur+360)%360;
+    var dur=REDUCED?0.3:4.2;
+    S.rot+=(REDUCED?0:360*6)+delta;
+    var wh=document.getElementById('wWheel');
+    wh.style.transition='transform '+dur+'s cubic-bezier(.12,.75,.15,1)';
+    wh.style.transform='rotate('+S.rot+'deg)';
+    var lastSeg=null,t0=performance.now();
+    (function tick(){var m=getComputedStyle(wh).transform;if(m&&m!=='none'){var v=m.split('(')[1].split(')')[0].split(',');var ang=Math.atan2(+v[1],+v[0])*180/Math.PI;var seg=Math.floor(((360-ang)%360+360)%360/72);if(lastSeg!==null&&seg!==lastSeg)beep(820,.04,.08);lastSeg=seg;}
+      if(performance.now()-t0<dur*1000)requestAnimationFrame(tick);})();
+    setTimeout(function(){
+      S.cls=c;S.q=q;S.done[c]=true;
+      S.clsLeft=S.clsLeft.filter(function(v){return v!==c;});S.qLeft=S.qLeft.filter(function(v){return v!==q;});
+      S.spinning=false;paint();var card=document.getElementById('wCard');if(card){card.classList.remove('land');void card.offsetWidth;card.classList.add('land');}
+      beep(660,.18,.15);setTimeout(function(){beep(990,.3,.15);},120);
+    },dur*1000+80);
+  }
+  var ac=null;
+  function beep(f,dur,vol){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(vol||.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+})();
+</script>
 </body>
 </html>
