@@ -436,8 +436,8 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
 <script>
 (function(){
   var MAX=30,KEY='socialSkillsC_stars_v1';   // 沿用原本的記錄，已加的星星不會不見
-  var CLASSES=['308','406','504','601','603','604'];
-  var START={'308':8,'406':10,'504':10,'601':10,'603':8,'604':8};
+  var CLASSES=['308','406','504','601','602','603','604'];
+  var START={'308':8,'406':10,'504':10,'601':10,'602':8,'603':8,'604':8};
   var stars={};
   try{var saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved)stars=saved;}catch(e){}
   CLASSES.forEach(function(c){if(typeof stars[c]!=='number')stars[c]=START[c];});
@@ -874,8 +874,8 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
 </style>
 <script>
 (function(){
-  var CLS=['308','406','504','601','603','604'];
-  var COL={'308':'#C2577A','406':'#6E5C93','504':'#3E8272','601':'#A97A2C','603':'#3E6690','604':'#A85842'};
+  var CLS=['308','406','504','601','602','603','604'];
+  var COL={'308':'#C2577A','406':'#6E5C93','504':'#3E8272','601':'#A97A2C','602':'#4F7F3A','603':'#3E6690','604':'#A85842'};
   var S={present:{},used:{},rot:0,result:null,spinning:false,noRepeat:true};
   CLS.forEach(function(c){S.present[c]=true;});
   var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -948,6 +948,41 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
   window.addEventListener('resize',fit);
   var ac=null;
   function beep(f,dur,vol){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(vol||.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+})();
+</script>
+<!-- ===== 新增：D 單元「教室情境」（匿名情境題） ===== -->
+<script>
+(function(){
+  var SC=[
+    {ic:'🪑',t:'搬桌子，讓位置',s:'教室要搬桌子，挪出位置給同學坐。有兩位同學互相看不順眼，一邊搬一邊說對方的壞話，教室變得亂成一團。',feel:['等著要坐下的同學：「是不是我害大家吵架？」','旁邊的同學：好吵、好亂，不知道該怎麼辦。','老師：要一邊搬桌子，一邊處理吵架，好累。'],todo:['先一起把桌子搬好，事情做完再說。','不喜歡對方，也不說難聽的話。','可以說：「我們先把桌子搬好吧！」']},
+    {ic:'🚲',t:'把椅子當腳踏車',s:'大家正在寫聯絡簿，有一位同學把椅子當成腳踏車，故意騎得上下跳動，發出很大的聲音，老師提醒了才停下來。',feel:['旁邊的同學：被聲音吵到，沒辦法專心寫。','老師：擔心椅子倒下來，他會受傷。'],todo:['坐好，雙腳踩在地上。','想動的時候，可以跟老師說：「我需要動一下。」','提醒同學：「這樣很危險，我們坐好寫吧！」']},
+    {ic:'👀',t:'一直盯著別人看',s:'上課的時候，有一位同學一直盯著另一位同學看，眼睛都不離開，被看的同學覺得很奇怪、很不自在。',feel:['被盯著的同學：「他為什麼一直看我？我好不舒服。」','想一想：如果有人一直盯著你，你會有什麼感覺？'],todo:['上課時，眼睛看老師、看黑板、看自己的課本。','被盯著覺得不舒服，可以說：「請不要一直看我。」','也可以告訴老師。']},
+    {ic:'💻',t:'偷偷按老師的電腦',s:'老師正在用筆電上課，有一位同學趁老師不注意，偷偷伸手想自己去按老師的滑鼠。',feel:['老師：「這是我的東西，你沒有先問我。」','其他同學：畫面突然被亂按，課就被打斷了。'],todo:['別人的東西，要先問，對方同意才可以碰。','可以說：「老師，我可以幫忙按嗎？」','等老師說「好」，再動手。']},
+    {ic:'🌪️',t:'一個人鬧，大家都受影響',s:'一整節課，有人一直動來動去、發出聲音，沒辦法安靜上課。坐在旁邊的同學，也越來越沒辦法專心。',feel:['旁邊想上課的同學：「我也想好好聽，可是一直被吵到。」','想一想：為什麼一個人的行為，會影響到大家？'],todo:['覺得坐不住時，先深呼吸，或跟老師說「我需要休息一下」。','旁邊的同學不要跟著鬧，繼續做自己的事。','可以小聲提醒：「我們一起專心，下課再玩。」']}
+  ];
+  var SLIDES=SC.map(function(x,i){return {k:'D・教室情境 '+'①②③④⑤'[i],t:x.ic+' '+x.t,room:i};});
+  // 放在 D 單元第 6 頁（影片〈走廊不是跑道〉）的前面
+  var at=decks.D.findIndex(function(x){return x.video==='tQ59yX_GkQY';});if(at<0)at=5;
+  Array.prototype.splice.apply(decks.D,[at,0].concat(SLIDES));
+
+  var open={};
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='D')SLIDES.forEach(mount);};
+  function el(o){return document.querySelectorAll('#stageD .slide')[decks.D.indexOf(o)];}
+  function fit(e){setTimeout(function(){var st=document.getElementById('stageD');if(!e||!st||!e.classList.contains('active'))return;e.style.zoom=1;var a=st.clientHeight-8,h=e.offsetHeight;if(h>a)e.style.zoom=(a/h).toFixed(3);},0);}
+  window.addEventListener('resize',function(){if(document.getElementById('unitD').classList.contains('active'))SLIDES.forEach(function(o){fit(el(o));});});
+
+  function mount(o){
+    var e=el(o);if(!e)return;var old=e.querySelector('.sc-mount');if(old)old.remove();
+    var x=SC[o.room],st=open[o.room]||{};
+    var feel=st.feel?'<div class="sc-ans"><h4>💭 大家心裡可能覺得</h4>'+x.feel.map(function(m){return '<p>'+m+'</p>';}).join('')+'</div>':'<button class="sc-btn" type="button" data-k="feel">💭 大家心裡會有什麼感覺？（按我看看）</button>';
+    var todo=st.todo?'<div class="sc-ans peer"><h4>✅ 可以怎麼做</h4>'+x.todo.map(function(m,i){return '<p class="'+(i===0?'say':'')+'">'+m+'</p>';}).join('')+'</div>':'<button class="sc-btn peer" type="button" data-k="todo">✅ 可以怎麼做比較好？（按我看看）</button>';
+    var w=document.createElement('div');w.className='sc-mount';
+    w.innerHTML='<div class="sc-wrap"><div class="sc-box"><span class="sc-ic">'+x.ic+'</span><div class="sc-text">'+x.s+'</div><div class="sc-think">🤔 想一想：如果你在現場，你會有什麼感覺？</div></div>'+
+      '<div class="sc-side">'+feel+todo+'<p class="sc-act">🎭 換一個方式，再演一次看看！</p></div></div>';
+    w.querySelectorAll('.sc-btn').forEach(function(b){b.onclick=function(){open[o.room]=open[o.room]||{};open[o.room][b.dataset.k]=true;mount(o);var f=e.querySelector('.sc-btn');if(f)f.focus();};});
+    e.appendChild(w);fit(e);
+  }
 })();
 </script>
 </body>
