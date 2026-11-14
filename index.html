@@ -532,12 +532,19 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
       {lv:'★★☆ 想一想感受',short:'走廊上的人',q:'走廊上可能有哪些人？如果他們被撞到，會發生什麼事？心裡會有什麼感覺？',hint:'抱著作業的人、端著東西的人、剛走出教室的人……'},
       {lv:'★★★ 給正向建議',short:'提醒奔跑的同學',q:'如果看到同學在走廊奔跑，你可以怎麼用正向的方式提醒他？',hint:'試試看：「轉角可能有人，我們慢慢走吧！」'}
     ],
-    E1:[
-      {lv:'★☆☆ 發生什麼事',short:'水壺為什麼輕',q:'影片裡，水壺今天為什麼「特別輕」？',hint:'水壺有來上學，可是裡面的水沒有來。'},
-      {lv:'★☆☆ 發生什麼事',short:'咖啡和手搖飲',q:'咖啡和手搖飲說了什麼？它們想讓大家怎麼做？',hint:'咖啡說「放心，有我」；手搖飲說「我裡面也很多水耶」。'},
-      {lv:'★★☆ 先思考再判斷',short:'「我也很多水」',q:'手搖飲說「我裡面也很多水」，這句話可以相信嗎？先想一想再回答。',hint:'想一想：它裡面除了水，還有什麼？糖、珍珠、奶蓋……'},
-      {lv:'★★☆ 想一想為什麼',short:'喝太多飲料',q:'含糖飲料喝太多，身體可能會發生什麼事？',hint:'蛀牙、變胖、脂肪肝……身體會「抗議」喔！'},
-      {lv:'★★★ 給正向建議',short:'給同學好建議',q:'同學說「口渴喝手搖飲就好啦！」你會怎麼先想一想，再給他正向的建議？',hint:'停 → 想 → 說：「白開水最解渴，飲料偶爾喝就好。」'}
+    E2:[
+      {lv:'★☆☆ 發生什麼事',short:'椅子變成什麼',q:'阿福把自然教室的圓凳，當成了什麼來玩？',hint:'他把椅子當成「搖搖椅」，前後搖來搖去。'},
+      {lv:'★☆☆ 發生什麼事',short:'阿福的理由',q:'阿福為什麼覺得這樣搖椅子不會有事？',hint:'他覺得：以前沒跌倒，以後應該也不會。'},
+      {lv:'★★☆ 先思考再判斷',short:'以前沒跌倒',q:'「以前沒跌倒，以後就不會跌倒」，這句話對嗎？先想一想再回答。',hint:'以前沒跌倒，可能只是運氣好。運氣不會每次都在。'},
+      {lv:'★★☆ 想一想後果',short:'如果椅子倒了',q:'如果椅子真的倒下來，可能會發生什麼事？',hint:'撞到頭、受傷、旁邊的同學也被嚇到或被撞到……'},
+      {lv:'★★★ 給正向建議',short:'什麼時候該停',q:'保護自己不是膽小。下次你想搖椅子時，可以怎麼提醒自己停下來？',hint:'停 → 想：「這樣安全嗎？」→ 四隻腳放好，坐好。'}
+    ],
+    E3:[
+      {lv:'★☆☆ 發生什麼事',short:'嚴重的事',q:'影片一開始，老師宣布了一件「非常嚴重」的事，是什麼事？',hint:'今天，竟然什麼事都沒發生！'},
+      {lv:'★☆☆ 發生什麼事',short:'誰在照顧我們',q:'影片裡提到，每天有哪些事情，是有人在幫我們做的？',hint:'叫我們起床、準備早餐、守護上學的路、打掃教室……'},
+      {lv:'★★☆ 先思考再判斷',short:'無聊還是很好',q:'什麼事都沒發生，是很無聊，還是很好？先想一想再說說看。',hint:'平安、沒有人受傷，也是一種幸福。'},
+      {lv:'★★☆ 想一想為什麼',short:'被老師念',q:'影片說「被老師念，也是有人正在注意你」，這是什麼意思？',hint:'老師念你，是因為他在關心你、希望你更好。'},
+      {lv:'★★★ 說出感謝',short:'謝謝照顧我的人',q:'想一想：今天有誰照顧了你？你可以怎麼跟他說謝謝？',hint:'試試看：「謝謝你幫我＿＿＿。」'}
     ]
   };
 
@@ -802,13 +809,14 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
 
   var open={};
   var baseRender=render;
-  render=function(id){baseRender(id);if(id==='D')KEY_SLIDES.forEach(mount);};
-  function el(obj){return document.querySelectorAll('#stageD .slide')[decks.D.indexOf(obj)];}
+  render=function(id){baseRender(id);if(id==='D'||id==='E')decks[id].forEach(function(o){if(o.brave||('scen' in o))mount(o,id);});};
+  window.braveSlidesCopy=function(prefix){return KEY_SLIDES.map(function(o){var c={};for(var k in o)c[k]=o[k];c.k=o.k.replace('D・',prefix);return c;});};
+  function el(obj,id){id=id||'D';return document.querySelectorAll('#stage'+id+' .slide')[decks[id].indexOf(obj)];}
   function fit(e){setTimeout(function(){var st=document.getElementById('stageD');if(!e||!st||!e.classList.contains('active'))return;e.style.zoom=1;var a=st.clientHeight-8,h=e.offsetHeight;if(h>a)e.style.zoom=(a/h).toFixed(3);},0);}
-  window.addEventListener('resize',function(){if(document.getElementById('unitD').classList.contains('active'))KEY_SLIDES.forEach(function(o){fit(el(o));});});
+  window.addEventListener('resize',function(){if(document.getElementById('unitD').classList.contains('active'))KEY_SLIDES.forEach(function(o){fit(el(o));});if(document.getElementById('unitE').classList.contains('active'))decks.E.forEach(function(o){if(o.brave||('scen' in o))fit(el(o,'E'));});});
 
-  function mount(obj){
-    var e=el(obj);if(!e)return;
+  function mount(obj,id){
+    var e=el(obj,id);if(!e)return;if(id==='E'){e.style.setProperty('--d','#A85842');e.style.setProperty('--d-bg','#F7ECE8');}
     var w=document.createElement('div');
     if(obj.brave==='intro'){
       w.innerHTML='<div class="brave-steps">'+
@@ -826,7 +834,7 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
       var peer=st.peer?'<div class="sc-ans peer"><h4>🤝 旁邊的同學可以怎麼做</h4>'+x.peer.map(function(m){return '<p>'+m+'</p>';}).join('')+'</div>':'<button class="sc-btn peer" type="button" data-k="peer">🤝 旁邊的同學可以怎麼做？（按我看看）</button>';
       w.innerHTML='<div class="sc-wrap"><div class="sc-box"><span class="sc-ic">'+x.ic+'</span><div class="sc-text">'+x.s+'</div><div class="sc-think">🤔 想一想：如果你是小晴，你可以怎麼做？</div></div>'+
         '<div class="sc-side">'+me+peer+'<p class="sc-act">🎭 說完後，找一位同學一起演演看！</p></div></div>';
-      w.querySelectorAll('.sc-btn').forEach(function(b){b.onclick=function(){open[obj.scen]=open[obj.scen]||{};open[obj.scen][b.dataset.k]=true;var old=e.querySelector('.sc-mount');if(old)old.remove();mount(obj);var f=e.querySelector('.sc-btn');if(f)f.focus();};});
+      w.querySelectorAll('.sc-btn').forEach(function(b){b.onclick=function(){open[obj.scen]=open[obj.scen]||{};open[obj.scen][b.dataset.k]=true;var old=e.querySelector('.sc-mount');if(old)old.remove();mount(obj,id);var f=e.querySelector('.sc-btn');if(f)f.focus();};});
     }
     w.className='sc-mount';e.appendChild(w);fit(e);
   }
@@ -983,6 +991,23 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
     w.querySelectorAll('.sc-btn').forEach(function(b){b.onclick=function(){open[o.room]=open[o.room]||{};open[o.room][b.dataset.k]=true;mount(o);var f=e.querySelector('.sc-btn');if(f)f.focus();};});
     e.appendChild(w);fit(e);
   }
+})();
+</script>
+<!-- ===== 調整：E 單元＝勇氣小練習 → 兩支新影片 ===== -->
+<script>
+(function(){
+  var E=decks.E;
+  for(var i=E.length-1;i>=0;i--){if(E[i].video==='Df_h7Esj4Qo'||E[i].qset==='E1')E.splice(i,1);}
+  var at=E.findIndex(function(x){return x.k==='E・單元介紹';})+1;
+  var add=window.braveSlidesCopy('E・').concat([
+    {k:'E・影片時間①',t:'《福東沒有什麼大事》椅子不想上班',s:'自然教室的黑色圓凳每天都站得好好的，沒想到遇上阿福，竟然變成了「搖搖椅」……',video:'7KYTz44qqjM'},
+    {k:'E・影片討論①',t:'抽一題，說說看',qset:'E2'},
+    {k:'E・影片時間②',t:'《福東沒有什麼大事》今天什麼都沒發生',s:'老師要宣布一件非常嚴重的事：今天，竟然什麼事都沒發生！',video:'Pyvpn9bhFhE'},
+    {k:'E・影片討論②',t:'抽一題，說說看',qset:'E3'}
+  ]);
+  Array.prototype.splice.apply(E,[at,0].concat(add));
+  var rc=E.findIndex(function(x){return x.k==='E・回顧';});
+  if(rc>=0)E[rc]={k:'E・回顧',t:'先想一想，再選擇',p:['想做一件事之前，<strong>先停一下</strong>：這樣安全嗎？','「以前沒事」不代表「以後也沒事」，<strong>保護自己不是膽小</strong>。','平凡平安的每一天，背後有很多人在照顧我們，<strong>記得說謝謝</strong>。'],f:'這週挑戰：<strong>椅子四隻腳放好坐</strong>，並跟一位照顧你的人說<strong>「謝謝」</strong>。'};
 })();
 </script>
 </body>
