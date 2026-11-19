@@ -545,6 +545,13 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
       {lv:'★★☆ 先思考再判斷',short:'無聊還是很好',q:'什麼事都沒發生，是很無聊，還是很好？先想一想再說說看。',hint:'平安、沒有人受傷，也是一種幸福。'},
       {lv:'★★☆ 想一想為什麼',short:'被老師念',q:'影片說「被老師念，也是有人正在注意你」，這是什麼意思？',hint:'老師念你，是因為他在關心你、希望你更好。'},
       {lv:'★★★ 說出感謝',short:'謝謝照顧我的人',q:'想一想：今天有誰照顧了你？你可以怎麼跟他說謝謝？',hint:'試試看：「謝謝你幫我＿＿＿。」'}
+    ],
+    E4:[
+      {lv:'★☆☆ 發生什麼事',short:'總裁比員工多',q:'影片說，如果教室成立公司，會變成什麼樣子？',hint:'總裁一定比員工多，而且每一位總裁都不想倒垃圾。'},
+      {lv:'★☆☆ 發生什麼事',short:'「你要聽我的」',q:'有人說「你要聽我的」之後，大家的遊戲變成什麼樣子？',hint:'有人發號施令、有人生氣，還有人默默退出，跑去溜滑梯。'},
+      {lv:'★★☆ 先思考再判斷',short:'朋友要聽我的嗎',q:'朋友一定要聽我的話嗎？如果他想玩的跟我不一樣，可以嗎？先想一想再回答。',hint:'朋友不是部下，他可以有不同的想法，也可以喜歡不一樣的東西。'},
+      {lv:'★★☆ 想一想感受',short:'被命令的感覺',q:'如果朋友一直說「你要聽我的」，你心裡會有什麼感覺？',hint:'可以用：我覺得＿＿＿，因為＿＿＿。'},
+      {lv:'★★★ 給正向建議',short:'想玩的不一樣',q:'你想打籃球，朋友卻想去抓蟲蟲，你可以怎麼說，讓大家都開心？',hint:'試試看：「我們先玩＿＿，再玩＿＿，好嗎？」或「下一節換你選！」'}
     ]
   };
 
@@ -1008,6 +1015,51 @@ window.addEventListener('resize',function(){var active=document.querySelector('.
   Array.prototype.splice.apply(E,[at,0].concat(add));
   var rc=E.findIndex(function(x){return x.k==='E・回顧';});
   if(rc>=0)E[rc]={k:'E・回顧',t:'先想一想，再選擇',p:['想做一件事之前，<strong>先停一下</strong>：這樣安全嗎？','「以前沒事」不代表「以後也沒事」，<strong>保護自己不是膽小</strong>。','平凡平安的每一天，背後有很多人在照顧我們，<strong>記得說謝謝</strong>。'],f:'這週挑戰：<strong>椅子四隻腳放好坐</strong>，並跟一位照顧你的人說<strong>「謝謝」</strong>。'};
+})();
+</script>
+<!-- ===== 新增：E 單元最前面「分享這週有趣的事」 ===== -->
+<style>
+.share-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1vw;margin-top:1.6vh}
+.share-card{background:#fff;border:1px solid var(--line);border-top:6px solid var(--e);border-radius:12px;padding:1.6vh .8vw;text-align:center}
+.share-card .ic{font-size:min(3.4vw,6vh);line-height:1}
+.share-card b{display:block;font-size:min(2.6vw,4.6vh);color:var(--e);margin-top:.6vh}
+.share-card .q{display:block;font-size:min(1.6vw,2.8vh);font-weight:900;margin-top:.6vh;line-height:1.35}
+.share-card small{display:block;font-size:min(1.2vw,2.1vh);color:var(--soft);margin-top:.6vh;line-height:1.45}
+.share-say{margin-top:2vh;background:#fff;border:2px dashed var(--e);border-radius:12px;padding:1.4vh 1.6vw}
+.share-say h4{margin:0 0 .6vh;font-size:min(1.5vw,2.6vh);color:var(--e)}
+.share-say p{margin:0;font-size:min(1.9vw,3.3vh);font-weight:900;line-height:1.6}
+.share-say p u{text-decoration:none;border-bottom:3px solid var(--e);padding:0 .3em;color:var(--soft);font-weight:700}
+.share-tip{margin-top:1.4vh;font-size:min(1.3vw,2.3vh);color:var(--soft)}
+@media(max-width:900px){.share-grid{grid-template-columns:1fr 1fr}.share-card b{font-size:5vw}.share-card .q{font-size:3vw}.share-card small,.share-tip{font-size:2.4vw}.share-say p{font-size:3.4vw}}
+</style>
+<script>
+(function(){
+  var slide={k:'E・暖身時間',t:'分享這週有趣的事 😄',share:true};
+  decks.E.unshift(slide);
+  var baseRender=render;
+  render=function(id){baseRender(id);if(id==='E')mount();};
+  function el(){return document.querySelectorAll('#stageE .slide')[decks.E.indexOf(slide)];}
+  function fit(e){setTimeout(function(){var st=document.getElementById('stageE');if(!e||!st||!e.classList.contains('active'))return;e.style.zoom=1;var a=st.clientHeight-8,h=e.offsetHeight;if(h>a)e.style.zoom=(a/h).toFixed(3);},0);}
+  window.addEventListener('resize',function(){if(document.getElementById('unitE').classList.contains('active'))fit(el());});
+  function mount(){
+    var e=el();if(!e)return;
+    var C=[['🧑‍🤝‍🧑','人','跟誰？','家人、朋友、同學、老師……'],['🎈','事','發生什麼事？','玩了什麼、做了什麼、看到什麼'],['🕒','時','什麼時候？','星期幾、早上、放學後、假日'],['📍','地','在哪裡？','家裡、學校、公園、外婆家'],['🧸','物','有什麼東西？','玩具、點心、寵物、禮物']];
+    var w=document.createElement('div');
+    w.innerHTML='<div class="share-grid">'+C.map(function(c){return '<div class="share-card"><span class="ic">'+c[0]+'</span><b>'+c[1]+'</b><span class="q">'+c[2]+'</span><small>'+c[3]+'</small></div>';}).join('')+'</div>'+
+      '<div class="share-say"><h4>🗣️ 可以這樣說</h4><p>我在 <u>什麼時候</u>，和 <u>誰</u> 在 <u>哪裡</u>，<u>做了什麼事</u>。<br>我覺得很 <u>有趣／開心</u>，因為 <u>＿＿＿</u>。</p></div>'+
+      '<p class="share-tip">💡 不一定要講到全部，說出 2～3 個就很棒！聽的同學可以問一個問題：「後來呢？」「你覺得怎麼樣？」　🎡 可以用右下角的輪盤決定誰先分享。</p>';
+    e.appendChild(w);fit(e);
+  }
+})();
+</script>
+<!-- ===== 新增：E 單元影片③＋抽題 ===== -->
+<script>
+(function(){
+  var E=decks.E,at=E.findIndex(function(x){return x.k==='E・回顧';});if(at<0)at=E.length;
+  E.splice(at,0,
+    {k:'E・影片時間③',t:'《福東沒有什麼大事》朋友不是部下',s:'如果國小教室可以成立公司，總裁一定比員工多，而且每一位總裁都不想倒垃圾……',video:'JFyzmicIPzo'},
+    {k:'E・影片討論③',t:'抽一題，說說看',qset:'E4'}
+  );
 })();
 </script>
 </body>
